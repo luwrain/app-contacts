@@ -16,13 +16,14 @@
 
 package org.luwrain.app.contacts;
 
-import org.luwrain.pim.contacts.StoredContact;
+//import org.luwrain.pim.contacts.StoredContact;
 
 interface Actions
 {
     void gotoFolders();
     void gotoValues();
     void gotoNotes();
-    void openContact(StoredContact contact);
+    void openContact(FolderWrapper wrapper);
+    boolean insertIntoTree();
     void closeApp();
 }

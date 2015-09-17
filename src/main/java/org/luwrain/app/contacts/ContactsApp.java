@@ -23,7 +23,7 @@ import org.luwrain.pim.contacts.*;
 
 public class ContactsApp implements Application, Actions
 {
-    private static final String STRINGS_NAME = "luwrain.contacts";
+    static private final String STRINGS_NAME = "luwrain.contacts";
 
     private Luwrain luwrain;
     private Base base = new Base();
@@ -40,7 +40,9 @@ public class ContactsApp implements Application, Actions
 	    return false;
 	strings = (Strings)o;
 	this.luwrain = luwrain;
-	base.init(luwrain, strings);
+	if (!base.init(luwrain, strings))
+	    return false;
+	System.out.println("here2");
 	createAreas();
 	return true;
     }
@@ -50,14 +52,26 @@ public class ContactsApp implements Application, Actions
 	return strings.appName();
     }
 
-    @Override public void openContact(StoredContact contact)
+    @Override public void openContact(FolderWrapper wrapper)
     {
+	valuesArea.addEdit("name", "Имя:", wrapper.title(), wrapper.folder(), true);
+	valuesArea.addEdit("tags", "Тэги:", "", "", true);
+	luwrain.message(wrapper.title());
+	//FIXME:
+    }
+
+    @Override public boolean insertIntoTree()
+    {
+	if (!base.insertIntoTree())
+	    return true;
+	return true;
     }
 
     private void createAreas()
     {
 	final Actions a = this;
 	final Strings s = strings;
+
 	foldersArea = new TreeArea(new DefaultControlEnvironment(luwrain),
 				   base.getFoldersModel(),
 				   strings.foldersAreaName()){
@@ -73,6 +87,8 @@ public class ContactsApp implements Application, Actions
 			case KeyboardEvent.TAB:
 			    actions.gotoValues();
 			    return true;
+			case KeyboardEvent.INSERT:
+			    return actions.insertIntoTree();
 			default:
 			    return super.onKeyboardEvent(event);
 			}
@@ -93,12 +109,76 @@ public class ContactsApp implements Application, Actions
 		}
 		@Override public void onClick(Object obj)
 		{
-		    if (obj != null && obj instanceof StoredContact)
-			actions.openContact((StoredContact)obj);
+		    if (obj != null && obj instanceof FolderWrapper)
+			actions.openContact((FolderWrapper)obj);
 		}
 	    };
 
-	//FIXME:
+	valuesArea = new FormArea(new DefaultControlEnvironment(luwrain), strings.valuesAreaName()){
+		private Strings strings = s;
+		private Actions actions = a;
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    if (event.isCommand() && !event.isModified())
+			switch(event.getCommand())
+			{
+			case KeyboardEvent.TAB:
+			    actions.gotoNotes();
+			    return true;
+			default:
+			    return super.onKeyboardEvent(event);
+			}
+		    return super.onKeyboardEvent(event);
+		}
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
+
+	notesArea = new EditArea(new DefaultControlEnvironment(luwrain), strings.notesAreaName()){
+		private Strings strings = s;
+		private Actions actions = a;
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    if (event.isCommand() && !event.isModified())
+			switch(event.getCommand())
+			{
+			case KeyboardEvent.TAB:
+			    actions.gotoFolders();
+			    return true;
+			default:
+			    return super.onKeyboardEvent(event);
+			}
+		    return super.onKeyboardEvent(event);
+		}
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
     }
 
     @Override public AreaLayout getAreasToShow()
@@ -118,7 +198,7 @@ public class ContactsApp implements Application, Actions
 
     public void gotoNotes()
     {
-	luwrain.setActiveArea(valuesArea);
+	luwrain.setActiveArea(notesArea);
     }
 
     @Override public void closeApp()

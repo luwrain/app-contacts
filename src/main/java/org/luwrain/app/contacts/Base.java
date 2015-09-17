@@ -20,16 +20,21 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.popups.Popups;
 import org.luwrain.pim.contacts.*;
 
 class Base
 {
+    static private final String SHARED_OBJECT_NAME = "luwrain.pim.contacts";
+
+
     private Luwrain luwrain;
     private Strings strings;
     private ContactsStoring storing;
-    private FoldersTreeModel foldersModel;
+    private FoldersCachedTreeModelSource foldersCachedSource;
+    private TreeModel foldersModel;
 
-    public void init(Luwrain luwrain, Strings strings)
+    public boolean init(Luwrain luwrain, Strings strings)
     {
 	this.luwrain = luwrain;
 	this.strings = strings;
@@ -37,19 +42,36 @@ class Base
 	    throw new NullPointerException("luwrain may not be null");
 	if (strings == null)
 	    throw new NullPointerException("strings may not be null");
-	//	mailStoring = luwrain.getPimManager().getMailStoring();
+	final Object obj = luwrain.getSharedObject(SHARED_OBJECT_NAME);
+	if (obj == null || !(obj instanceof org.luwrain.pim.contacts.Factory))
+	    return false;
+	final org.luwrain.pim.contacts.Factory factory = (org.luwrain.pim.contacts.Factory)obj;
+	final Object obj2 = factory.createContactsStoring();
+	if (obj2 == null || !(obj2 instanceof ContactsStoring))
+	    return false;
+	storing = (ContactsStoring)obj2;
+	return true;
     }
 
-    public FoldersTreeModel getFoldersModel()
+    public TreeModel getFoldersModel()
     {
 	if (foldersModel != null)
 	    return foldersModel;
-	foldersModel = new FoldersTreeModel(storing, strings);
+	foldersCachedSource = new FoldersCachedTreeModelSource(storing, strings);
+	foldersModel = new CachedTreeModel(foldersCachedSource);
 	return foldersModel;
     }
 
     public boolean openFolder(StoredContactsFolder folder)
     {
 	return false;
+    }
+
+    public boolean insertIntoTree()
+    {
+	final String folderTitle = strings.insertIntoTreePopupValueFolder();
+	final String contactTitle = strings.insertIntoTreePopupValueContact();
+	final Object res = Popups.fixedList(luwrain, strings.insertIntoTreePopupName(), new String[]{folderTitle, contactTitle}, 0);
+	return true;
     }
 }

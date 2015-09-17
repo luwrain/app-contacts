@@ -22,6 +22,8 @@ public interface Strings
     String foldersAreaName();
     String valuesAreaName();
     String notesAreaName();
-    String noStoring();
-    String foldersRoot();
+    String insertIntoTreePopupName();
+    String insertIntoTreePopupValueFolder();
+    String insertIntoTreePopupValueContact();
+    String folderTitle(String origTitle);
 }
