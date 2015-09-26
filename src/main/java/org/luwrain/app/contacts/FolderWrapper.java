@@ -1,24 +1,24 @@
 
 package org.luwrain.app.contacts;
 
+import org.luwrain.core.NullCheck;
 import org.luwrain.pim.contacts.StoredContactsFolder;
 
+//Needed for localized titles;
 class FolderWrapper
 {
     private StoredContactsFolder folder;
     private String title;
 
-    public FolderWrapper(StoredContactsFolder folder, String title)
+    FolderWrapper(StoredContactsFolder folder, String title)
     {
 	this.folder = folder;
 	this.title = title;
-	if (folder == null)
-	    throw new NullPointerException("folder may not be null");
-	if (title == null)
-	    throw new NullPointerException("title may not be null");
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(title, "title");
     }
 
-    public StoredContactsFolder folder()
+    StoredContactsFolder folder()
     {
 	return folder;
     }

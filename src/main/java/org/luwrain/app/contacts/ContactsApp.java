@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the Luwrain.
-
-   Luwrain is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   Luwrain is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.contacts;
 
@@ -42,7 +27,6 @@ public class ContactsApp implements Application, Actions
 	this.luwrain = luwrain;
 	if (!base.init(luwrain, strings))
 	    return false;
-	System.out.println("here2");
 	createAreas();
 	return true;
     }
@@ -52,31 +36,50 @@ public class ContactsApp implements Application, Actions
 	return strings.appName();
     }
 
-    @Override public void openContact(FolderWrapper wrapper)
+    @Override public void openContact(Object obj)
     {
-	valuesArea.addEdit("name", "Имя:", wrapper.title(), wrapper.folder(), true);
-	valuesArea.addEdit("tags", "Тэги:", "", "", true);
-	luwrain.message(wrapper.title());
-	//FIXME:
+	if (obj == null || !(obj instanceof StoredContact))
+	    return;
+	if (base.hasCurrentContact())
+	    base.saveForm(valuesArea);
+	base.setCurrentContact((StoredContact)obj);
+	base.fillValuesArea(valuesArea);
+	gotoValues();
     }
 
     @Override public boolean insertIntoTree()
     {
-	if (!base.insertIntoTree())
+	final Object selected = foldersArea.selected();
+	if (selected == null || !(selected instanceof FolderWrapper))
+	    return false;
+	final FolderWrapper wrapper = (FolderWrapper)selected;
+	if (!base.insertIntoTree(wrapper.folder()))
 	    return true;
+	foldersArea.refresh();
+	return true;
+    }
+
+    //Returns false if the area must issue an error beep;
+    @Override public boolean insertValue()
+    {
+	if (!base.hasCurrentContact())
+	    return false;
+	if (!base.saveForm(valuesArea))
+	    return true;
+	if (!base.insertValue())
+	    return true;
+	base.fillValuesArea(valuesArea);
 	return true;
     }
 
     private void createAreas()
     {
-	final Actions a = this;
+	final Actions actions = this;
 	final Strings s = strings;
 
 	foldersArea = new TreeArea(new DefaultControlEnvironment(luwrain),
 				   base.getFoldersModel(),
 				   strings.foldersAreaName()){
-		private Strings strings = s;
-		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)
@@ -109,24 +112,23 @@ public class ContactsApp implements Application, Actions
 		}
 		@Override public void onClick(Object obj)
 		{
-		    if (obj != null && obj instanceof FolderWrapper)
-			actions.openContact((FolderWrapper)obj);
+		    NullCheck.notNull(obj, "obj");
+		    actions.openContact(obj);
 		}
 	    };
 
 	valuesArea = new FormArea(new DefaultControlEnvironment(luwrain), strings.valuesAreaName()){
-		private Strings strings = s;
-		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
-		    if (event == null)
-			throw new NullPointerException("event may not be null");
+		    NullCheck.notNull(event, "event");
 		    if (event.isCommand() && !event.isModified())
 			switch(event.getCommand())
 			{
 			case KeyboardEvent.TAB:
 			    actions.gotoNotes();
 			    return true;
+			case KeyboardEvent.INSERT:
+			    return actions.insertValue();
 			default:
 			    return super.onKeyboardEvent(event);
 			}
@@ -148,8 +150,6 @@ public class ContactsApp implements Application, Actions
 	    };
 
 	notesArea = new EditArea(new DefaultControlEnvironment(luwrain), strings.notesAreaName()){
-		private Strings strings = s;
-		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)
@@ -203,6 +203,8 @@ public class ContactsApp implements Application, Actions
 
     @Override public void closeApp()
     {
+	if (base.hasCurrentContact())
+	    base.saveForm(valuesArea);
 	luwrain.closeApp();
     }
 }
