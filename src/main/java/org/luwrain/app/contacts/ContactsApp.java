@@ -40,10 +40,10 @@ public class ContactsApp implements Application, Actions
     {
 	if (obj == null || !(obj instanceof StoredContact))
 	    return;
-	if (base.hasCurrentContact())
-	    base.saveForm(valuesArea);
+	ensureEverythingSaved();
 	base.setCurrentContact((StoredContact)obj);
 	base.fillValuesArea(valuesArea);
+	base.fillNotesArea(notesArea);
 	gotoValues();
     }
 
@@ -203,8 +203,16 @@ public class ContactsApp implements Application, Actions
 
     @Override public void closeApp()
     {
-	if (base.hasCurrentContact())
-	    base.saveForm(valuesArea);
+	ensureEverythingSaved();
 	luwrain.closeApp();
+    }
+
+    private void ensureEverythingSaved()
+    {
+
+	if (!base.hasCurrentContact())
+	    return;
+	base.saveForm(valuesArea);
+	base.saveNotes(notesArea);
     }
 }

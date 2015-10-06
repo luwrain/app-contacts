@@ -238,4 +238,14 @@ return false;
 	}
 	return true;
     }
+
+    void fillNotesArea(EditArea area)
+    {
+    }
+
+    void saveNotes(EditArea area)
+    {
+    }
+
+
 }
