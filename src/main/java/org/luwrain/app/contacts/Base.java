@@ -239,12 +239,45 @@ return false;
 	return true;
     }
 
-    void fillNotesArea(EditArea area)
+    boolean fillNotesArea(EditArea area)
     {
+	String value;
+	try {
+	    value = currentContact.getNotes();
+	    }
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    luwrain.message("Во время получения комментария произошла непредвиденная ошибка:" + e.getMessage());
+	    return false;
+	}
+	area.getEditContent().setLines(value.split("\n", -1));
+	luwrain.onAreaNewContent(area);
+	return true;
     }
 
-    void saveNotes(EditArea area)
+    boolean saveNotes(EditArea area)
     {
+	if (currentContact == null)
+	    return true;
+	final StringBuilder b = new StringBuilder();
+	final int count = area.getLineCount();
+	if (count > 0)
+	{
+	    b.append(area.getLine(0));
+	    for(int i = 1;i < count;++i)
+		b.append("\n" + area.getLine(i));
+	}
+	try {
+	    currentContact.setNotes(b.toString());
+	    return true;
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    luwrain.message("Во время сохранения комментария произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    return false;
+	}
     }
 
 

@@ -209,7 +209,6 @@ public class ContactsApp implements Application, Actions
 
     private void ensureEverythingSaved()
     {
-
 	if (!base.hasCurrentContact())
 	    return;
 	base.saveForm(valuesArea);
