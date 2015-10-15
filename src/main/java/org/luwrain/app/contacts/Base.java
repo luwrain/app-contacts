@@ -173,7 +173,8 @@ return false;
 		continue;
 	    final ContactValue value = (ContactValue)obj;
 	    value.value = area.getEnteredText(i);
-	    values.add(value);
+	    if (!value.value.trim().isEmpty())
+		values.add(value);
 	}
 	try {
 	    currentContact.setValues(values.toArray(new ContactValue[values.size()]));

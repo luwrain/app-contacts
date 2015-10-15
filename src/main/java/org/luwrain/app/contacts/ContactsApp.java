@@ -65,6 +65,7 @@ public class ContactsApp implements Application, Actions
 
     @Override public boolean deleteValue()
     {
+	//Currently the user can leave the value empty to delete it on saving
 	return false;
     }
 
