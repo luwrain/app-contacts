@@ -12,4 +12,6 @@ interface Actions
     boolean insertIntoTree();
     boolean insertValue();
     void closeApp();
+    boolean deleteFromTree();
+    boolean deleteValue();
 }

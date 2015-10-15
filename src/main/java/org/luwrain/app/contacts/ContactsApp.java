@@ -36,6 +36,41 @@ public class ContactsApp implements Application, Actions
 	return strings.appName();
     }
 
+    @Override public boolean deleteFromTree()
+    {
+	final Object selected = foldersArea.selected();
+	if (selected == null ||  (
+				  !(selected instanceof FolderWrapper) && !(selected instanceof StoredContact)))
+	    return false;
+	if (selected instanceof FolderWrapper)
+	{
+	    final FolderWrapper wrapper = (FolderWrapper)selected;
+	    if (base.deleteFolder(wrapper.folder()))
+		foldersArea.refresh();
+	    return true;
+}
+	if (selected instanceof StoredContact)
+	{
+	    final StoredContact contact = (StoredContact)selected;
+	    if (base.deleteContact(contact))
+	    {
+		foldersArea.refresh();
+		valuesArea.clear();
+		notesArea.clear();
+	    }
+	    return true;
+	}
+	return false;
+    }
+
+    @Override public boolean deleteValue()
+    {
+	return false;
+    }
+
+
+
+
     @Override public void openContact(Object obj)
     {
 	if (obj == null || !(obj instanceof StoredContact))
@@ -82,8 +117,7 @@ public class ContactsApp implements Application, Actions
 				   strings.foldersAreaName()){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
-		    if (event == null)
-			throw new NullPointerException("event may not be null");
+		    NullCheck.notNull(event, "event");
 		    if (event.isCommand() && !event.isModified())
 			switch(event.getCommand())
 			{
@@ -92,6 +126,8 @@ public class ContactsApp implements Application, Actions
 			    return true;
 			case KeyboardEvent.INSERT:
 			    return actions.insertIntoTree();
+			case KeyboardEvent.DELETE:
+			    return actions.deleteFromTree();
 			default:
 			    return super.onKeyboardEvent(event);
 			}
@@ -129,6 +165,8 @@ public class ContactsApp implements Application, Actions
 			    return true;
 			case KeyboardEvent.INSERT:
 			    return actions.insertValue();
+			case KeyboardEvent.DELETE:
+			    return actions.deleteValue();
 			default:
 			    return super.onKeyboardEvent(event);
 			}

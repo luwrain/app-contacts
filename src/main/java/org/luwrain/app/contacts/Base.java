@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.popups.Popups;
+import org.luwrain.popups.*;
 import org.luwrain.pim.contacts.*;
 
 class Base
@@ -280,5 +280,57 @@ return false;
 	}
     }
 
+    boolean deleteFolder(StoredContactsFolder folder)
+    {
+	try {
+	    if (folder.isRoot())
+	    {
+		luwrain.message("Корневая группа контактов не может быть удалена", Luwrain.MESSAGE_ERROR);
+		return false;
+	    }
+	    final StoredContact[] contacts = storing.loadContacts(folder);
+	    final StoredContactsFolder[] subfolders = storing.getFolders(folder);
+	    if (contacts != null && contacts.length > 0)
+	    {
+		luwrain.message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MESSAGE_ERROR);
+		return false;
+	    }
+	    if (subfolders != null && subfolders.length > 0)
+	    {
+		luwrain.message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MESSAGE_ERROR);
+		return false;
+	    }
+	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, 0);
+	    luwrain.popup(popup);
+	    if (popup.closing.cancelled() || !popup.result())
+		return false;
+	    storing.deleteFolder(folder);
+	    return true;
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    luwrain.message("Во время попытки удаления группы контактов произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    return false;
+	}
+    }
 
+    boolean deleteContact(StoredContact contact)
+    {
+	try {
+	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, 0);
+	    luwrain.popup(popup);
+	    if (popup.closing.cancelled() || !popup.result())
+		return false;
+	    storing.deleteContact(contact);
+	    currentContact = null;//FIXME:maybe only if currentContact == contact
+	    return true;
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    luwrain.message("Во время попытки удаления контакта произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    return false;
+	}
+    }
 }
