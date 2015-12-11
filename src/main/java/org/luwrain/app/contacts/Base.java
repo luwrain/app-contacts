@@ -252,8 +252,7 @@ return false;
 	    luwrain.message("Во время получения комментария произошла непредвиденная ошибка:" + e.getMessage());
 	    return false;
 	}
-	area.getEditContent().setLines(value.split("\n", -1));
-	luwrain.onAreaNewContent(area);
+	area.setLines(value.split("\n", -1));
 	return true;
     }
 
