@@ -140,7 +140,7 @@ public class ContactsApp implements Application, Actions
 			throw new NullPointerException("event may not be null");
 		    switch(event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
 		    default:
@@ -179,7 +179,7 @@ public class ContactsApp implements Application, Actions
 			throw new NullPointerException("event may not be null");
 		    switch(event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
 		    default:
@@ -210,7 +210,7 @@ public class ContactsApp implements Application, Actions
 			throw new NullPointerException("event may not be null");
 		    switch(event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
 		    default:
