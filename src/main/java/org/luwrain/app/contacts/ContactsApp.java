@@ -119,15 +119,15 @@ public class ContactsApp implements Application, Actions
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.isCommand() && !event.isModified())
-			switch(event.getCommand())
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
 			{
-			case KeyboardEvent.TAB:
+			case TAB:
 			    actions.gotoValues();
 			    return true;
-			case KeyboardEvent.INSERT:
+			case INSERT:
 			    return actions.insertIntoTree();
-			case KeyboardEvent.DELETE:
+			case DELETE:
 			    return actions.deleteFromTree();
 			default:
 			    return super.onKeyboardEvent(event);
@@ -158,15 +158,15 @@ public class ContactsApp implements Application, Actions
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.isCommand() && !event.isModified())
-			switch(event.getCommand())
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
 			{
-			case KeyboardEvent.TAB:
+			case TAB:
 			    actions.gotoNotes();
 			    return true;
-			case KeyboardEvent.INSERT:
+			case INSERT:
 			    return actions.insertValue();
-			case KeyboardEvent.DELETE:
+			case DELETE:
 			    return actions.deleteValue();
 			default:
 			    return super.onKeyboardEvent(event);
@@ -193,10 +193,10 @@ public class ContactsApp implements Application, Actions
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
-		    if (event.isCommand() && !event.isModified())
-			switch(event.getCommand())
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
 			{
-			case KeyboardEvent.TAB:
+			case TAB:
 			    actions.gotoFolders();
 			    return true;
 			default:
