@@ -113,9 +113,12 @@ public class ContactsApp implements Application, Actions
 	final Actions actions = this;
 	final Strings s = strings;
 
-	foldersArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				   base.getFoldersModel(),
-				   strings.foldersAreaName()){
+	final TreeArea.Params treeParams = new TreeArea.Params();
+	treeParams.environment = new DefaultControlEnvironment(luwrain);
+	treeParams.model = base.getFoldersModel();
+	treeParams.name = 				   strings.foldersAreaName();
+
+	foldersArea = new TreeArea(treeParams) {
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

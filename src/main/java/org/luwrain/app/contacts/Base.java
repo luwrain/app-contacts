@@ -17,7 +17,7 @@ class Base
     private ContactsStoring storing;
     private StoredContact currentContact = null;
     private TreeModelSource treeModelSource;
-    private TreeModel foldersModel;
+    private TreeArea.Model foldersModel;
 
     boolean init(Luwrain luwrain, Strings strings)
     {
@@ -43,7 +43,7 @@ class Base
 	return currentContact != null;
     }
 
-    TreeModel getFoldersModel()
+    TreeArea.Model getFoldersModel()
     {
 	if (foldersModel != null)
 	    return foldersModel;
