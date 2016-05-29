@@ -300,7 +300,7 @@ return false;
 		luwrain.message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MESSAGE_ERROR);
 		return false;
 	    }
-	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, 0);
+	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
 	    luwrain.popup(popup);
 	    if (popup.closing.cancelled() || !popup.result())
 		return false;
@@ -318,7 +318,7 @@ return false;
     boolean deleteContact(StoredContact contact)
     {
 	try {
-	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, 0);
+	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
 	    luwrain.popup(popup);
 	    if (popup.closing.cancelled() || !popup.result())
 		return false;
