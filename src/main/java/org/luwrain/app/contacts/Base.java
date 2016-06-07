@@ -62,7 +62,7 @@ class Base
 	NullCheck.notNull(insertInto, "insertInto");
 	final String folderTitle = strings.insertIntoTreePopupValueFolder();
 	final String contactTitle = strings.insertIntoTreePopupValueContact();
-	final Object res = Popups.fixedList(luwrain, strings.insertIntoTreePopupName(), new String[]{folderTitle, contactTitle}, 0);
+	final Object res = Popups.fixedList(luwrain, strings.insertIntoTreePopupName(), new String[]{folderTitle, contactTitle});
 	if (res == folderTitle)
 	    return insertFolder(insertInto);
 	    if (res == contactTitle)
@@ -206,7 +206,7 @@ return false;
 		addressTitle,
 		birthdayTitle,
 		skypeTitle,
-}, 0);
+});
 	if (res == null)
 	    return false;
 	int type;
