@@ -191,7 +191,7 @@ public class ContactsApp implements Application, Actions
 		}
 	    };
 
-	notesArea = new EditArea(new DefaultControlEnvironment(luwrain), strings.notesAreaName()){
+	notesArea = new EditArea(new DefaultControlEnvironment(luwrain), strings.notesAreaName(), new String[0], null){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)
