@@ -21,21 +21,12 @@ class Base
 
     boolean init(Luwrain luwrain, Strings strings)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(strings, "strings");
 	this.luwrain = luwrain;
 	this.strings = strings;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
-	final Object obj = luwrain.getSharedObject(SHARED_OBJECT_NAME);
-	if (obj == null || !(obj instanceof org.luwrain.pim.contacts.Factory))
-	    return false;
-	final org.luwrain.pim.contacts.Factory factory = (org.luwrain.pim.contacts.Factory)obj;
-	final Object obj2 = factory.createContactsStoring();
-	if (obj2 == null || !(obj2 instanceof ContactsStoring))
-	    return false;
-	storing = (ContactsStoring)obj2;
-	return true;
+	storing = org.luwrain.pim.contacts.Factory.getContactsStoring(luwrain );
+	return storing != null;
     }
 
     boolean hasCurrentContact()
