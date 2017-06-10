@@ -23,7 +23,7 @@ class TreeModelSource implements org.luwrain.controls.CachedTreeModelSource
 	    final StoredContactsFolder root = storing.getFoldersRoot();
 	    if (root == null)
 		return null;
-	    return new FolderWrapper(root, strings.folderTitle(root.getTitle()));
+	    return new FolderWrapper(root, root.getTitle());
 	}
 	catch (Exception e)
 	{
@@ -46,7 +46,7 @@ class TreeModelSource implements org.luwrain.controls.CachedTreeModelSource
 		contacts = new StoredContact[0];
 	    final FolderWrapper[] wrappers= new FolderWrapper[folders.length];
 	    for(int i = 0;i < folders.length;++i)
-		wrappers[i] = new FolderWrapper(folders[i], strings.folderTitle(folders[i].getTitle()));
+		wrappers[i] = new FolderWrapper(folders[i], folders[i].getTitle());
 	    final Object[] res = new Object[wrappers.length + contacts.length];
 	    for(int i = 0;i < wrappers.length;++i)
 		res[i] = wrappers[i];

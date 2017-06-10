@@ -10,5 +10,4 @@ public interface Strings
     String insertIntoTreePopupName();
     String insertIntoTreePopupValueFolder();
     String insertIntoTreePopupValueContact();
-    String folderTitle(String origTitle);
 }
