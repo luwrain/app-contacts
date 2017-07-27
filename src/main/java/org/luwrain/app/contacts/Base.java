@@ -293,7 +293,7 @@ return false;
 	    }
 	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
 	    luwrain.popup(popup);
-	    if (popup.closing.cancelled() || !popup.result())
+	    if (popup.wasCancelled() || !popup.result())
 		return false;
 	    storing.deleteFolder(folder);
 	    return true;
@@ -311,7 +311,7 @@ return false;
 	try {
 	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
 	    luwrain.popup(popup);
-	    if (popup.closing.cancelled() || !popup.result())
+	    if (popup.wasCancelled() || !popup.result())
 		return false;
 	    storing.deleteContact(contact);
 	    currentContact = null;//FIXME:maybe only if currentContact == contact
