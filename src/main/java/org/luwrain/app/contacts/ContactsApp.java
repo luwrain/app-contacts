@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.app.contacts;
 
@@ -6,114 +21,35 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
 
-public class ContactsApp implements Application, Actions
+class ContactsApp implements Application
 {
-    static private final String STRINGS_NAME = "luwrain.contacts";
+    private Luwrain luwrain = null;
+    private Strings strings = null;
+    private Base base = null;
+    private Actions actions = null;
 
-    private Luwrain luwrain;
-    private Base base = new Base();
-    private Strings strings;
-
-    private TreeArea foldersArea;
-    private FormArea valuesArea;
-    private EditArea notesArea;
+    private TreeArea foldersArea = null;
+    private FormArea valuesArea = null;
+    private EditArea notesArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
+	final Object o = luwrain.i18n().getStrings(Strings.NAME);
 	if (o == null || !(o instanceof Strings))
-	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, STRINGS_NAME);
+	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
 	strings = (Strings)o;
 	this.luwrain = luwrain;
-	if (!base.init(luwrain, strings))
+	this.base = new Base(luwrain, strings);
+	if (!base.hasStoring())
 	    return new InitResult(InitResult.Type.FAILURE);
+	this.actions = new Actions(luwrain, strings, base);
 	createAreas();
 	return new InitResult();
     }
 
-    @Override public String getAppName()
-    {
-	return strings.appName();
-    }
-
-    @Override public boolean deleteFromTree()
-    {
-	final Object selected = foldersArea.selected();
-	if (selected == null ||  (
-				  !(selected instanceof FolderWrapper) && !(selected instanceof StoredContact)))
-	    return false;
-	if (selected instanceof FolderWrapper)
-	{
-	    final FolderWrapper wrapper = (FolderWrapper)selected;
-	    if (base.deleteFolder(wrapper.folder()))
-		foldersArea.refresh();
-	    return true;
-}
-	if (selected instanceof StoredContact)
-	{
-	    final StoredContact contact = (StoredContact)selected;
-	    if (base.deleteContact(contact))
-	    {
-		foldersArea.refresh();
-		valuesArea.clear();
-		notesArea.clear();
-	    }
-	    return true;
-	}
-	return false;
-    }
-
-    @Override public boolean deleteValue()
-    {
-	//Currently the user can leave the value empty to delete it on saving
-	return false;
-    }
-
-
-
-
-    @Override public void openContact(Object obj)
-    {
-	if (obj == null || !(obj instanceof StoredContact))
-	    return;
-	ensureEverythingSaved();
-	base.setCurrentContact((StoredContact)obj);
-	base.fillValuesArea(valuesArea);
-	base.fillNotesArea(notesArea);
-	gotoValues();
-    }
-
-    @Override public boolean insertIntoTree()
-    {
-	final Object selected = foldersArea.selected();
-	if (selected == null || !(selected instanceof FolderWrapper))
-	    return false;
-	final FolderWrapper wrapper = (FolderWrapper)selected;
-	if (!base.insertIntoTree(wrapper.folder()))
-	    return true;
-	foldersArea.refresh();
-	return true;
-    }
-
-    //Returns false if the area must issue an error beep;
-    @Override public boolean insertValue()
-    {
-	if (!base.hasCurrentContact())
-	    return false;
-	if (!base.saveForm(valuesArea))
-	    return true;
-	if (!base.insertValue())
-	    return true;
-	base.fillValuesArea(valuesArea);
-	return true;
-    }
-
     private void createAreas()
     {
-	final Actions actions = this;
-	final Strings s = strings;
-
 	final TreeArea.Params treeParams = new TreeArea.Params();
 	treeParams.environment = new DefaultControlEnvironment(luwrain);
 	treeParams.model = base.getFoldersModel();
@@ -127,12 +63,12 @@ public class ContactsApp implements Application, Actions
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    actions.gotoValues();
+			    luwrain.setActiveArea(valuesArea);
 			    return true;
 			case INSERT:
-			    return actions.insertIntoTree();
+			    return actions.insertIntoTree(foldersArea);
 			case DELETE:
-			    return actions.deleteFromTree();
+			    return actions.deleteFromTree(foldersArea, valuesArea, notesArea);
 			default:
 			    return super.onKeyboardEvent(event);
 			}
@@ -145,7 +81,7 @@ public class ContactsApp implements Application, Actions
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			actions.closeApp();
+			closeApp();
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);
@@ -154,7 +90,7 @@ public class ContactsApp implements Application, Actions
 		@Override public void onClick(Object obj)
 		{
 		    NullCheck.notNull(obj, "obj");
-		    actions.openContact(obj);
+		    actions.openContact(ContactsApp.this, obj, valuesArea, notesArea);
 		}
 	    };
 
@@ -166,10 +102,10 @@ public class ContactsApp implements Application, Actions
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    actions.gotoNotes();
+			    gotoNotes();
 			    return true;
 			case INSERT:
-			    return actions.insertValue();
+			    return actions.insertValue(valuesArea);
 			case DELETE:
 			    return actions.deleteValue();
 			default:
@@ -184,7 +120,7 @@ public class ContactsApp implements Application, Actions
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			actions.closeApp();
+			closeApp();
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);
@@ -201,7 +137,7 @@ public class ContactsApp implements Application, Actions
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    actions.gotoFolders();
+			    luwrain.setActiveArea(foldersArea);
 			    return true;
 			default:
 			    return super.onKeyboardEvent(event);
@@ -215,7 +151,7 @@ public class ContactsApp implements Application, Actions
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			actions.closeApp();
+			closeApp();
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);
@@ -229,17 +165,7 @@ public class ContactsApp implements Application, Actions
 	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, valuesArea, notesArea);
     }
 
-    @Override public void gotoFolders()
-    {
-	luwrain.setActiveArea(foldersArea);
-    }
-
-    @Override public void gotoValues()
-    {
-	luwrain.setActiveArea(valuesArea);
-    }
-
-    public void gotoNotes()
+    void gotoNotes()
     {
 	luwrain.setActiveArea(notesArea);
     }
@@ -250,11 +176,16 @@ public class ContactsApp implements Application, Actions
 	luwrain.closeApp();
     }
 
-    private void ensureEverythingSaved()
+    void ensureEverythingSaved()
     {
 	if (!base.hasCurrentContact())
 	    return;
 	base.saveForm(valuesArea);
 	base.saveNotes(notesArea);
+    }
+
+    @Override public String getAppName()
+    {
+	return strings.appName();
     }
 }
