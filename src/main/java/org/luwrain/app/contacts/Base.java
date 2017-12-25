@@ -94,7 +94,7 @@ return false;
 	f.title = name;
 	f.orderIndex = 0;
 	try {
-	    storing.saveFolder(insertInto, f);
+	    storing.getFolders().save(insertInto, f);
 	}
 	catch(Exception e)
 	{
@@ -118,7 +118,7 @@ return false;
 	final Contact c = new Contact();
 	c.title = name;
 	try {
-	    storing.saveContact(insertInto, c);
+	    storing.getContacts().save(insertInto, c);
 	}
 	catch(Exception e)
 	{
@@ -298,8 +298,8 @@ return false;
 		luwrain.message("Корневая группа контактов не может быть удалена", Luwrain.MESSAGE_ERROR);
 		return false;
 	    }
-	    final StoredContact[] contacts = storing.loadContacts(folder);
-	    final StoredContactsFolder[] subfolders = storing.getFolders(folder);
+	    final StoredContact[] contacts = storing.getContacts().load(folder);
+	    final StoredContactsFolder[] subfolders = storing.getFolders().load(folder);
 	    if (contacts != null && contacts.length > 0)
 	    {
 		luwrain.message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MESSAGE_ERROR);
@@ -314,7 +314,7 @@ return false;
 	    luwrain.popup(popup);
 	    if (popup.wasCancelled() || !popup.result())
 		return false;
-	    storing.deleteFolder(folder);
+	    storing.getFolders().delete(folder);
 	    return true;
 	}
 	catch(Exception e)
@@ -332,7 +332,7 @@ return false;
 	    luwrain.popup(popup);
 	    if (popup.wasCancelled() || !popup.result())
 		return false;
-	    storing.deleteContact(contact);
+	    storing.getContacts().delete(contact);
 	    currentContact = null;//FIXME:maybe only if currentContact == contact
 	    return true;
 	}

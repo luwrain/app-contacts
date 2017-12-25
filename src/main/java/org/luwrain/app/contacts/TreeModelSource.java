@@ -35,7 +35,7 @@ class TreeModelSource implements org.luwrain.controls.CachedTreeModelSource
     @Override public Object getRoot()
     {
 	try {
-	    final StoredContactsFolder root = storing.getFoldersRoot();
+	    final StoredContactsFolder root = storing.getFolders().getRoot();
 	    if (root == null)
 		return null;
 	    return new FolderWrapper(root, root.getTitle());
@@ -53,8 +53,8 @@ class TreeModelSource implements org.luwrain.controls.CachedTreeModelSource
 	    return new Object[0];
 	final FolderWrapper wrapper = (FolderWrapper)obj;
 	try {
-	    StoredContactsFolder[] folders = storing.getFolders(wrapper.folder());
-	    StoredContact[] contacts = storing.loadContacts(wrapper.folder());
+	    StoredContactsFolder[] folders = storing.getFolders().load(wrapper.folder());
+	    StoredContact[] contacts = storing.getContacts().load(wrapper.folder());
 	    if (folders == null)
 		folders = new StoredContactsFolder[0];
 	    if (contacts == null)
