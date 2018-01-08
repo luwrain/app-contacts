@@ -87,7 +87,7 @@ return false;
 	    return false;
 	if (name.trim().isEmpty())
 	{
-	    luwrain.message("Новая группа контактов не может быть создана с пустым именем", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Новая группа контактов не может быть создана с пустым именем", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	final ContactsFolder f = new ContactsFolder();
@@ -99,7 +99,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время добавления новой группы контактов произошла неожиданная ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время добавления новой группы контактов произошла неожиданная ошибка", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	return true;
@@ -112,7 +112,7 @@ return false;
 	    return false;
 	if (name.trim().isEmpty())
 	{
-	    luwrain.message("Новый контакт не может быть создан с пустым именем", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Новый контакт не может быть создан с пустым именем", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	final Contact c = new Contact();
@@ -123,7 +123,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время добавления нового контакта произошла неожиданная ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время добавления нового контакта произошла неожиданная ошибка", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	return true;
@@ -166,7 +166,7 @@ return false;
 	catch (Exception e)
 	{
 	    e.printStackTrace(); 
-	    luwrain.message("Во время получения данных контакта произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время получения данных контакта произошла непредвиденная ошибка", Luwrain.MessageType.ERROR);
 	}
     }
 
@@ -192,7 +192,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время сохранения введённых изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время сохранения введённых изменений произошла непредвиденная ошибка", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	return true;
@@ -244,7 +244,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время добавления нового значения произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время добавления нового значения произошла непредвиденная ошибка", Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	return true;
@@ -285,7 +285,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время сохранения комментария произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время сохранения комментария произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
     }
@@ -295,19 +295,19 @@ return false;
 	try {
 	    if (folder.isRoot())
 	    {
-		luwrain.message("Корневая группа контактов не может быть удалена", Luwrain.MESSAGE_ERROR);
+		luwrain.message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
 		return false;
 	    }
 	    final StoredContact[] contacts = storing.getContacts().load(folder);
 	    final StoredContactsFolder[] subfolders = storing.getFolders().load(folder);
 	    if (contacts != null && contacts.length > 0)
 	    {
-		luwrain.message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MESSAGE_ERROR);
+		luwrain.message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
 		return false;
 	    }
 	    if (subfolders != null && subfolders.length > 0)
 	    {
-		luwrain.message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MESSAGE_ERROR);
+		luwrain.message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MessageType.ERROR);
 		return false;
 	    }
 	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
@@ -320,7 +320,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время попытки удаления группы контактов произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время попытки удаления группы контактов произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
     }
@@ -339,7 +339,7 @@ return false;
 	catch(Exception e)
 	{
 	    e.printStackTrace();
-	    luwrain.message("Во время попытки удаления контакта произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время попытки удаления контакта произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
     }
