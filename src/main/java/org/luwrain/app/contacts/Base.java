@@ -40,7 +40,7 @@ Base(Luwrain luwrain, Strings strings)
 	NullCheck.notNull(strings, "strings");
 	this.luwrain = luwrain;
 	this.strings = strings;
-	storing = org.luwrain.pim.contacts.Factory.getContactsStoring(luwrain );
+	storing = org.luwrain.pim.Connections.getContactsStoring(luwrain , true);
     }
 
     boolean hasStoring()
