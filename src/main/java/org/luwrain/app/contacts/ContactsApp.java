@@ -128,7 +128,11 @@ class ContactsApp implements Application
 		}
 	    };
 
-	notesArea = new EditArea(new DefaultControlEnvironment(luwrain), strings.notesAreaName(), new String[0], null){
+	final EditArea.Params editParams = new EditArea.Params();
+	editParams.context = new DefaultControlEnvironment(luwrain);
+	editParams.name = strings.notesAreaName();
+
+	notesArea = new EditArea(editParams){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)
