@@ -74,7 +74,7 @@ class ContactsApp implements Application
 			}
 		    return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -84,7 +84,7 @@ class ContactsApp implements Application
 			closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 		@Override public void onClick(Object obj)
@@ -113,7 +113,7 @@ class ContactsApp implements Application
 			}
 		    return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -123,7 +123,7 @@ class ContactsApp implements Application
 			closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 	    };
@@ -148,7 +148,7 @@ class ContactsApp implements Application
 			}
 		    return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -158,7 +158,7 @@ class ContactsApp implements Application
 			closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 	    };
