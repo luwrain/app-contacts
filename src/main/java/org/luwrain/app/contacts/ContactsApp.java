@@ -56,7 +56,7 @@ class ContactsApp implements Application
 	treeParams.name = 				   strings.foldersAreaName();
 
 	foldersArea = new TreeArea(treeParams) {
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -70,9 +70,9 @@ class ContactsApp implements Application
 			case DELETE:
 			    return actions.deleteFromTree(foldersArea, valuesArea, notesArea);
 			default:
-			    return super.onKeyboardEvent(event);
+			    return super.onInputEvent(event);
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
@@ -95,7 +95,7 @@ class ContactsApp implements Application
 	    };
 
 	valuesArea = new FormArea(new DefaultControlEnvironment(luwrain), strings.valuesAreaName()){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -109,9 +109,9 @@ class ContactsApp implements Application
 			case DELETE:
 			    return actions.deleteValue();
 			default:
-			    return super.onKeyboardEvent(event);
+			    return super.onInputEvent(event);
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
@@ -133,7 +133,7 @@ class ContactsApp implements Application
 	editParams.name = strings.notesAreaName();
 
 	notesArea = new EditArea(editParams){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -144,9 +144,9 @@ class ContactsApp implements Application
 			    luwrain.setActiveArea(foldersArea);
 			    return true;
 			default:
-			    return super.onKeyboardEvent(event);
+			    return super.onInputEvent(event);
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
