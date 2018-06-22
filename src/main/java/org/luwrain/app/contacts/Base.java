@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.contacts;
 
@@ -23,13 +8,12 @@ import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 import org.luwrain.pim.contacts.*;
 
-class Base
+final class Base
 {
-    static private final String SHARED_OBJECT_NAME = "luwrain.pim.contacts";
-
     private final Luwrain luwrain;
     private final Strings strings;
-    private final ContactsStoring storing;
+    final ContactsStoring storing;
+
     private StoredContact currentContact = null;
     private TreeModelSource treeModelSource;
     private TreeArea.Model foldersModel;
@@ -40,7 +24,7 @@ Base(Luwrain luwrain, Strings strings)
 	NullCheck.notNull(strings, "strings");
 	this.luwrain = luwrain;
 	this.strings = strings;
-	storing = org.luwrain.pim.Connections.getContactsStoring(luwrain , true);
+	this.storing = org.luwrain.pim.Connections.getContactsStoring(luwrain , true);
     }
 
     boolean hasStoring()
