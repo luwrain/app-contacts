@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.contacts;
 
@@ -21,7 +6,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
 
-class ContactsApp implements Application
+final class App implements Application
 {
     private Luwrain luwrain = null;
     private Strings strings = null;
@@ -90,7 +75,7 @@ class ContactsApp implements Application
 		@Override public void onClick(Object obj)
 		{
 		    NullCheck.notNull(obj, "obj");
-		    actions.openContact(ContactsApp.this, obj, valuesArea, notesArea);
+		    actions.openContact(App.this, obj, valuesArea, notesArea);
 		}
 	    };
 
