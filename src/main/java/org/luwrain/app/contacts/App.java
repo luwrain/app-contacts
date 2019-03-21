@@ -36,7 +36,7 @@ final class App implements Application
     private void createAreas()
     {
 	final TreeArea.Params treeParams = new TreeArea.Params();
-	treeParams.environment = new DefaultControlEnvironment(luwrain);
+	treeParams.context = new DefaultControlEnvironment(luwrain);
 	treeParams.model = base.getFoldersModel();
 	treeParams.name = 				   strings.foldersAreaName();
 
