@@ -36,7 +36,7 @@ final class App implements Application
     private void createAreas()
     {
 	final TreeArea.Params treeParams = new TreeArea.Params();
-	treeParams.context = new DefaultControlEnvironment(luwrain);
+	treeParams.context = new DefaultControlContext(luwrain);
 	treeParams.model = base.getFoldersModel();
 	treeParams.name = 				   strings.foldersAreaName();
 
@@ -79,7 +79,7 @@ final class App implements Application
 		}
 	    };
 
-	valuesArea = new FormArea(new DefaultControlEnvironment(luwrain), strings.valuesAreaName()){
+	valuesArea = new FormArea(new DefaultControlContext(luwrain), strings.valuesAreaName()){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -114,7 +114,7 @@ final class App implements Application
 	    };
 
 	final EditArea.Params editParams = new EditArea.Params();
-	editParams.context = new DefaultControlEnvironment(luwrain);
+	editParams.context = new DefaultControlContext(luwrain);
 	editParams.name = strings.notesAreaName();
 
 	notesArea = new EditArea(editParams){
