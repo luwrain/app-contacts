@@ -10,8 +10,8 @@ import org.luwrain.pim.contacts.*;
 
 final class Base
 {
-    private final Luwrain luwrain;
-    private final Strings strings;
+    final Luwrain luwrain;
+final Strings strings;
     final ContactsStoring storing;
 
     private StoredContact currentContact = null;

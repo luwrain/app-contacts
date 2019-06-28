@@ -11,16 +11,14 @@ final class Actions
     private final Strings strings;
     private final Base base;
 
-    Actions(Luwrain luwrain, Strings strings, Base base)
+    Actions(Base base)
     {
-	NullCheck.notNull(luwrain,"luwrain");
-	NullCheck.notNull(strings, "strings");
 	NullCheck.notNull(base, "base");
-	this.luwrain = luwrain;
-	this.strings = strings;
+	this.luwrain = base.luwrain;
+	this.strings = base.strings;
 	this.base = base;
     }
-    
+
     boolean insertIntoTree(TreeArea foldersArea)
     {
 	NullCheck.notNull(foldersArea, "foldersArea");
