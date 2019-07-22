@@ -28,7 +28,7 @@ final class App implements Application
 	this.base = new Base(luwrain, strings);
 	if (!base.hasStoring())
 	    return new InitResult(InitResult.Type.FAILURE);
-	this.actions = new Actions(luwrain, strings, base);
+	this.actions = new Actions(base);
 	createAreas();
 	return new InitResult();
     }
