@@ -32,7 +32,7 @@ final class Actions
 	return true;
     }
 
-    boolean deleteFromTree(TreeArea foldersArea, FormArea valuesArea, EditArea notesArea)
+    boolean deleteFromTree(TreeArea foldersArea, FormArea valuesArea, EditAreaOld notesArea)
     {
 	NullCheck.notNull(foldersArea, "foldersArea");
 	NullCheck.notNull(valuesArea, "valuesArea");
@@ -62,7 +62,7 @@ final class Actions
 	return false;
     }
 
-    void openContact(App app, Object obj, FormArea valuesArea, EditArea notesArea)
+    void openContact(App app, Object obj, FormArea valuesArea, EditAreaOld notesArea)
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(valuesArea, "valuesArea");

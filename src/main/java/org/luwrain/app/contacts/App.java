@@ -15,7 +15,7 @@ final class App implements Application
 
     private TreeArea foldersArea = null;
     private FormArea valuesArea = null;
-    private EditArea notesArea = null;
+    private EditAreaOld notesArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -113,11 +113,11 @@ final class App implements Application
 		}
 	    };
 
-	final EditArea.Params editParams = new EditArea.Params();
+	final EditAreaOld.Params editParams = new EditAreaOld.Params();
 	editParams.context = new DefaultControlContext(luwrain);
 	editParams.name = strings.notesAreaName();
 
-	notesArea = new EditArea(editParams){
+	notesArea = new EditAreaOld(editParams){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)
