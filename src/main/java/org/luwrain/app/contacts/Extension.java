@@ -20,20 +20,11 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public class Extension extends org.luwrain.core.extensions.EmptyExtension
+public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     @Override public Command[] getCommands(Luwrain luwrain)
     {
-	return new Command[]{new Command(){
-		@Override public String getName()
-		{
-		    return "contacts";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    luwrain.launchApp("contacts");
-		}
-	    }};
+	return new Command[]{new SimpleShortcutCommand("contacts")};
     }
 
     @Override public Shortcut[] getShortcuts(Luwrain luwrain)
