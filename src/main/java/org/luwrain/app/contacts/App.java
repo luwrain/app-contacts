@@ -6,7 +6,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
 
-final class App implements Application
+final class App implements Application, MonoApp
 {
     private Luwrain luwrain = null;
     private Strings strings = null;
@@ -48,8 +48,7 @@ final class App implements Application
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    luwrain.setActiveArea(valuesArea);
-			    return true;
+			    return AreaLayoutHelper.activateNextArea(luwrain, getAreaLayout(), this);
 			case INSERT:
 			    return actions.insertIntoTree(foldersArea);
 			case DELETE:
@@ -61,8 +60,9 @@ final class App implements Application
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
-		    if (event == null)
-			throw new NullPointerException("event may not be null");
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
@@ -74,7 +74,7 @@ final class App implements Application
 		}
 	    };
 
-	valuesArea = new FormArea(new DefaultControlContext(luwrain), strings.valuesAreaName()){
+	this.valuesArea = new FormArea(new DefaultControlContext(luwrain), strings.valuesAreaName()){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -82,8 +82,9 @@ final class App implements Application
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    gotoNotes();
-			    return true;
+			    return AreaLayoutHelper.activateNextArea(luwrain, getAreaLayout(), this);
+			case BACKSPACE:
+			    return AreaLayoutHelper.activatePrevArea(luwrain, getAreaLayout(), this);
 			case INSERT:
 			    return actions.insertValue(valuesArea);
 			case DELETE:
@@ -95,8 +96,9 @@ final class App implements Application
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
-		    if (event == null)
-			throw new NullPointerException("event may not be null");
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
@@ -111,8 +113,7 @@ final class App implements Application
 	final EditAreaOld.Params editParams = new EditAreaOld.Params();
 	editParams.context = new DefaultControlContext(luwrain);
 	editParams.name = strings.notesAreaName();
-
-	notesArea = new EditAreaOld(editParams){
+	this.notesArea = new EditAreaOld(editParams){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)
@@ -121,8 +122,7 @@ final class App implements Application
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    luwrain.setActiveArea(foldersArea);
-			    return true;
+			    return AreaLayoutHelper.activateNextArea(luwrain, getAreaLayout(), this);
 			default:
 			    return super.onInputEvent(event);
 			}
@@ -130,8 +130,9 @@ final class App implements Application
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
-		    if (event == null)
-			throw new NullPointerException("event may not be null");
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
@@ -144,22 +145,6 @@ final class App implements Application
 	    };
     }
 
-    @Override public AreaLayout getAreaLayout()
-    {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, valuesArea, notesArea);
-    }
-
-    void gotoNotes()
-    {
-	luwrain.setActiveArea(notesArea);
-    }
-
-    @Override public void closeApp()
-    {
-	ensureEverythingSaved();
-	luwrain.closeApp();
-    }
-
     void ensureEverythingSaved()
     {
 	if (!base.hasCurrentContact())
@@ -168,8 +153,25 @@ final class App implements Application
 	base.saveNotes(notesArea);
     }
 
+    @Override public AreaLayout getAreaLayout()
+    {
+	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, valuesArea, notesArea);
+    }
+
+    @Override public void closeApp()
+    {
+	ensureEverythingSaved();
+	luwrain.closeApp();
+    }
+
     @Override public String getAppName()
     {
 	return strings.appName();
+    }
+
+    @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
+    {
+	NullCheck.notNull(app, "app");
+	return MonoApp.Result.BRING_FOREGROUND;
     }
 }

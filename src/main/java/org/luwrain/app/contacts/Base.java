@@ -17,8 +17,6 @@ final Strings strings;
     private final StoredContactsFolder foldersRoot;
     private StoredContactsFolder[] folders = new StoredContactsFolder[0];
     private StoredContact currentContact = null;
-    private TreeModelSource treeModelSource;
-    private TreeArea.Model foldersModel;
 
 Base(Luwrain luwrain, Strings strings)
     {
@@ -46,15 +44,6 @@ root = storing.getFolders().getRoot();
     boolean hasCurrentContact()
     {
 	return currentContact != null;
-    }
-
-    TreeArea.Model getFoldersModel()
-    {
-	if (foldersModel != null)
-	    return foldersModel;
-	treeModelSource = new TreeModelSource(storing, strings);
-	foldersModel = new CachedTreeModel(treeModelSource);
-	return foldersModel;
     }
 
     boolean openFolder(StoredContactsFolder folder)
