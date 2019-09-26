@@ -19,7 +19,7 @@ final class Actions
 	this.base = base;
     }
 
-    boolean insertIntoTree(TreeArea foldersArea)
+    boolean insertIntoTree(ListArea foldersArea)
     {
 	NullCheck.notNull(foldersArea, "foldersArea");
 	final Object selected = foldersArea.selected();
@@ -32,7 +32,7 @@ final class Actions
 	return true;
     }
 
-    boolean deleteFromTree(TreeArea foldersArea, FormArea valuesArea, EditAreaOld notesArea)
+    boolean deleteFromTree(ListArea foldersArea, FormArea valuesArea, EditAreaOld notesArea)
     {
 	NullCheck.notNull(foldersArea, "foldersArea");
 	NullCheck.notNull(valuesArea, "valuesArea");

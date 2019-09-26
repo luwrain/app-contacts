@@ -13,7 +13,7 @@ final class App implements Application
     private Base base = null;
     private Actions actions = null;
 
-    private TreeArea foldersArea = null;
+    private ListArea foldersArea = null;
     private FormArea valuesArea = null;
     private EditAreaOld notesArea = null;
 
@@ -23,7 +23,7 @@ final class App implements Application
 	final Object o = luwrain.i18n().getStrings(Strings.NAME);
 	if (o == null || !(o instanceof Strings))
 	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
-	strings = (Strings)o;
+	this.strings = (Strings)o;
 	this.luwrain = luwrain;
 	this.base = new Base(luwrain, strings);
 	if (!base.hasStoring())
@@ -35,12 +35,12 @@ final class App implements Application
 
     private void createAreas()
     {
-	final TreeArea.Params treeParams = new TreeArea.Params();
-	treeParams.context = new DefaultControlContext(luwrain);
-	treeParams.model = base.getFoldersModel();
-	treeParams.name = 				   strings.foldersAreaName();
-
-	foldersArea = new TreeArea(treeParams) {
+	this.foldersArea = new ListArea(base.createFoldersListParams((area, index, obj)->{
+		    NullCheck.notNull(area, "area");
+		    NullCheck.notNull(obj, "obj");
+		    actions.openContact(App.this, obj, valuesArea, notesArea);
+		    return true;
+		})) {
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -71,11 +71,6 @@ final class App implements Application
 		    default:
 			return super.onSystemEvent(event);
 		    }
-		}
-		@Override public void onClick(Object obj)
-		{
-		    NullCheck.notNull(obj, "obj");
-		    actions.openContact(App.this, obj, valuesArea, notesArea);
 		}
 	    };
 

@@ -14,6 +14,8 @@ final class Base
 final Strings strings;
     final ContactsStoring storing;
 
+    private final StoredContactsFolder foldersRoot;
+    private StoredContactsFolder[] folders = new StoredContactsFolder[0];
     private StoredContact currentContact = null;
     private TreeModelSource treeModelSource;
     private TreeArea.Model foldersModel;
@@ -25,6 +27,15 @@ Base(Luwrain luwrain, Strings strings)
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(luwrain , true);
+	StoredContactsFolder root = null;
+		try {
+root = storing.getFolders().getRoot();
+	}
+	catch (Exception e)
+	{
+	    luwrain.crash(e);
+    }
+		this.foldersRoot = root;
     }
 
     boolean hasStoring()
@@ -327,4 +338,30 @@ return false;
 	    return false;
 	}
     }
-}
+
+    ListArea.Params createFoldersListParams(ListArea.ClickHandler clickHandler)
+    {
+	NullCheck.notNull(clickHandler, "clickHandler");
+	final ListArea.Params params = new ListArea.Params();
+	params.context = new DefaultControlContext(luwrain);
+	params.model = new FoldersListModel();
+	params.appearance = new ListUtils.DefaultAppearance(params.context);
+	params.name = strings.foldersAreaName();
+	return params;
+    }
+
+    final class FoldersListModel implements ListArea.Model
+{
+    @Override public int getItemCount()
+    {
+	return folders.length;
+    }
+    @Override public Object getItem(int index)
+    {
+	return folders[index];
+    }
+    @Override public void refresh()
+    {
+    }
+    }
+    }
