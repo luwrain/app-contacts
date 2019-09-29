@@ -16,16 +16,16 @@
 
 package org.luwrain.app.contacts;
 
-import org.luwrain.core.NullCheck;
-import org.luwrain.pim.contacts.StoredContactsFolder;
+import org.luwrain.core.*;
+import org.luwrain.pim.contacts.*;
 
 //Needed for localized titles;
 class FolderWrapper
 {
-    private StoredContactsFolder folder;
+    private ContactsFolder folder;
     private String title;
 
-    FolderWrapper(StoredContactsFolder folder, String title)
+    FolderWrapper(ContactsFolder folder, String title)
     {
 	this.folder = folder;
 	this.title = title;
@@ -33,7 +33,7 @@ class FolderWrapper
 	NullCheck.notNull(title, "title");
     }
 
-    StoredContactsFolder folder()
+    ContactsFolder folder()
     {
 	return folder;
     }

@@ -54,7 +54,7 @@ final class Actions
 	NullCheck.notNull(notesArea, "notesArea");
 	final Object selected = foldersArea.selected();
 	if (selected == null ||  (
-				  !(selected instanceof FolderWrapper) && !(selected instanceof StoredContact)))
+				  !(selected instanceof FolderWrapper) && !(selected instanceof Contact)))
 	    return false;
 	if (selected instanceof FolderWrapper)
 	{
@@ -63,9 +63,9 @@ final class Actions
 		foldersArea.refresh();
 	    return true;
 	}
-	if (selected instanceof StoredContact)
+	if (selected instanceof Contact)
 	{
-	    final StoredContact contact = (StoredContact)selected;
+	    final Contact contact = (Contact)selected;
 	    if (base.deleteContact(contact))
 	    {
 		foldersArea.refresh();
@@ -82,10 +82,10 @@ final class Actions
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(valuesArea, "valuesArea");
 	NullCheck.notNull(notesArea, "notesArea");
-	if (obj == null || !(obj instanceof StoredContact))
+	if (obj == null || !(obj instanceof Contact))
 	    return;
 	app.ensureEverythingSaved();
-	base.setCurrentContact((StoredContact)obj);
+	base.setCurrentContact((Contact)obj);
 	base.fillValuesArea(valuesArea);
 	base.fillNotesArea(notesArea);
 	luwrain.setActiveArea(valuesArea);

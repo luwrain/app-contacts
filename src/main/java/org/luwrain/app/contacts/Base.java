@@ -29,9 +29,9 @@ final class Base
 final Strings strings;
     final ContactsStoring storing;
 
-    private final StoredContactsFolder foldersRoot;
-    private StoredContactsFolder[] folders = new StoredContactsFolder[0];
-    private StoredContact currentContact = null;
+    private final ContactsFolder foldersRoot;
+    private ContactsFolder[] folders = new ContactsFolder[0];
+    private Contact currentContact = null;
 
 Base(Luwrain luwrain, Strings strings)
     {
@@ -40,7 +40,7 @@ Base(Luwrain luwrain, Strings strings)
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(luwrain , true);
-	StoredContactsFolder root = null;
+	ContactsFolder root = null;
 		try {
 root = storing.getFolders().getRoot();
 	}
@@ -61,12 +61,12 @@ root = storing.getFolders().getRoot();
 	return currentContact != null;
     }
 
-    boolean openFolder(StoredContactsFolder folder)
+    boolean openFolder(ContactsFolder folder)
     {
 	return false;
     }
 
-    boolean insertIntoTree(StoredContactsFolder insertInto)
+    boolean insertIntoTree(ContactsFolder insertInto)
     {
 	NullCheck.notNull(insertInto, "insertInto");
 	final String folderTitle = strings.insertIntoTreePopupValueFolder();
@@ -79,7 +79,7 @@ root = storing.getFolders().getRoot();
 return false;
     }
 
-    private boolean insertFolder(StoredContactsFolder insertInto)
+    private boolean insertFolder(ContactsFolder insertInto)
     {
 	final String name = Popups.simple(luwrain, "Имя новой группы контактов", "Введите имя новой группы:", "");
 	if (name == null)
@@ -89,22 +89,21 @@ return false;
 	    luwrain.message("Новая группа контактов не может быть создана с пустым именем", Luwrain.MessageType.ERROR);
 	    return false;
 	}
-	final ContactsFolder f = new ContactsFolder();
-	f.title = name;
-	f.orderIndex = 0;
 	try {
+	    final ContactsFolder f = new ContactsFolder();
+	    f.setTitle(name);
+	    f.setOrderIndex(0);
 	    storing.getFolders().save(insertInto, f);
+	    return true;
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
-	    luwrain.message("Во время добавления новой группы контактов произошла неожиданная ошибка", Luwrain.MessageType.ERROR);
+	    luwrain.crash(e);
 	    return false;
 	}
-	return true;
     }
 
-    private boolean insertContact(StoredContactsFolder insertInto)
+    private boolean insertContact(ContactsFolder insertInto)
     {
 	final String name = Popups.simple(luwrain, "Имя нового контакта", "Введите имя нового контакта:", "");
 	if (name == null)
@@ -114,21 +113,20 @@ return false;
 	    luwrain.message("Новый контакт не может быть создан с пустым именем", Luwrain.MessageType.ERROR);
 	    return false;
 	}
-	final Contact c = new Contact();
-	c.title = name;
 	try {
+	    final Contact c = new Contact();
+	    c.setTitle(name);
 	    storing.getContacts().save(insertInto, c);
+	    return true;
 	}
 	catch(Exception e)
 	{
-	    e.printStackTrace();
-	    luwrain.message("Во время добавления нового контакта произошла неожиданная ошибка", Luwrain.MessageType.ERROR);
+	    luwrain.crash(e);
 	    return false;
 	}
-	return true;
     }
 
-    void setCurrentContact(StoredContact contact)
+    void setCurrentContact(Contact contact)
     {
 	NullCheck.notNull(contact, "contact");
 	currentContact = contact;
@@ -289,7 +287,7 @@ return false;
 	}
     }
 
-    boolean deleteFolder(StoredContactsFolder folder)
+    boolean deleteFolder(ContactsFolder folder)
     {
 	try {
 	    if (folder.isRoot())
@@ -297,8 +295,8 @@ return false;
 		luwrain.message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
 		return false;
 	    }
-	    final StoredContact[] contacts = storing.getContacts().load(folder);
-	    final StoredContactsFolder[] subfolders = storing.getFolders().load(folder);
+	    final Contact[] contacts = storing.getContacts().load(folder);
+	    final ContactsFolder[] subfolders = storing.getFolders().load(folder);
 	    if (contacts != null && contacts.length > 0)
 	    {
 		luwrain.message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
@@ -324,7 +322,7 @@ return false;
 	}
     }
 
-    boolean deleteContact(StoredContact contact)
+    boolean deleteContact(Contact contact)
     {
 	try {
 	    final YesNoPopup popup = new YesNoPopup(luwrain, "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
