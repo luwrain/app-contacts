@@ -142,23 +142,23 @@ return false;
 	    area.addEdit("name", "Имя:", currentContact.getTitle(), null, true);
 	    int counter = 1;
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.MAIL)
-		    area.addEdit("mail" + (counter++), "Электронная почта:", v.value, v, true);
+		if (v.getType() == ContactValue.MAIL)
+		    area.addEdit("mail" + (counter++), "Электронная почта:", v.getValue(), v, true);
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.MOBILE_PHONE)
-		    area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.value, v, true);
+		if (v.getType() == ContactValue.MOBILE_PHONE)
+		    area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.getValue(), v, true);
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.GROUND_PHONE)
-		    area.addEdit("ground" + (counter++), "Телефон:", v.value, v, true);
+		if (v.getType() == ContactValue.GROUND_PHONE)
+		    area.addEdit("ground" + (counter++), "Телефон:", v.getValue(), v, true);
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.ADDRESS)
-		    area.addEdit("address" + (counter++), "Адрес:", v.value, v, true);
+		if (v.getType() == ContactValue.ADDRESS)
+		    area.addEdit("address" + (counter++), "Адрес:", v.getValue(), v, true);
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.BIRTHDAY)
-		    area.addEdit("birthday" + (counter++), "Дата рождения:", v.value, v, true);
+		if (v.getType() == ContactValue.BIRTHDAY)
+		    area.addEdit("birthday" + (counter++), "Дата рождения:", v.getValue(), v, true);
 	    for(ContactValue v: currentContact.getValues())
-		if (v.type == ContactValue.SKYPE)
-		    area.addEdit("skype" + (counter++), "Skype:", v.value, v, true);
+		if (v.getType() == ContactValue.SKYPE)
+		    area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
 	}
 	catch (Exception e)
 	{
@@ -179,8 +179,8 @@ return false;
 	    if (obj == null || !(obj instanceof ContactValue))
 		continue;
 	    final ContactValue value = (ContactValue)obj;
-	    value.value = area.getEnteredText(i);
-	    if (!value.value.trim().isEmpty())
+	    //FIXME:	    value.setValue(area.getEnteredText(i));
+	    if (!value.getValue().trim().isEmpty())
 		values.add(value);
 	}
 	try {
