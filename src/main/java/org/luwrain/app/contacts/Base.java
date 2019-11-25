@@ -175,7 +175,7 @@ return false;
 	final LinkedList<ContactValue> values = new LinkedList<ContactValue>();
 	for(int i = 0;i < area.getItemCount();++i)
 	{
-	    final Object obj = area.getItemObjOnLine(i);
+	    final Object obj = area.getItemObj(i);
 	    if (obj == null || !(obj instanceof ContactValue))
 		continue;
 	    final ContactValue value = (ContactValue)obj;
