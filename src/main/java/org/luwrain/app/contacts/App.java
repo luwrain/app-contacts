@@ -30,7 +30,7 @@ final class App implements Application, MonoApp
 
     private ListArea foldersArea = null;
     private FormArea valuesArea = null;
-    private EditAreaOld notesArea = null;
+    private EditArea notesArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -125,10 +125,10 @@ final class App implements Application, MonoApp
 		}
 	    };
 
-	final EditAreaOld.Params editParams = new EditAreaOld.Params();
+	final EditArea.Params editParams = new EditArea.Params();
 	editParams.context = new DefaultControlContext(luwrain);
 	editParams.name = strings.notesAreaName();
-	this.notesArea = new EditAreaOld(editParams){
+	this.notesArea = new EditArea(editParams){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)

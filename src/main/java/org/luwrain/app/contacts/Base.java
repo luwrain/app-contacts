@@ -247,7 +247,7 @@ return false;
 	return true;
     }
 
-    boolean fillNotesArea(EditAreaOld area)
+    boolean fillNotesArea(EditArea area)
     {
 	String value;
 	try {
@@ -263,7 +263,7 @@ return false;
 	return true;
     }
 
-    boolean saveNotes(EditAreaOld area)
+    boolean saveNotes(EditArea area)
     {
 	if (currentContact == null)
 	    return true;
