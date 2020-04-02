@@ -341,29 +341,4 @@ return false;
 	}
     }
 
-    ListArea.Params createFoldersListParams(ListArea.ClickHandler clickHandler)
-    {
-	NullCheck.notNull(clickHandler, "clickHandler");
-	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlContext(luwrain);
-	params.model = new FoldersListModel();
-	params.appearance = new ListUtils.DefaultAppearance(params.context);
-	params.name = strings.foldersAreaName();
-	return params;
-    }
-
-    final class FoldersListModel implements ListArea.Model
-{
-    @Override public int getItemCount()
-    {
-	return folders.length;
-    }
-    @Override public Object getItem(int index)
-    {
-	return folders[index];
-    }
-    @Override public void refresh()
-    {
-    }
-    }
     }
