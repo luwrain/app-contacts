@@ -18,19 +18,11 @@ final class App extends AppBase<Strings> implements MonoApp
 	super(Strings.NAME, Strings.class);
     }
 
-    @Override protected boolean onAppInit()
+    @Override protected boolean onAppInit() throws Exception
     {
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
-	ContactsFolder root = null;
-		try {
-root = storing.getFolders().getRoot();
-	}
-	catch (Exception e)
-	{
-	    getLuwrain().crash(e);
-    }
-		this.foldersRoot = root;
-		this.mainLayout = new MainLayout(this);
+	this.foldersRoot = storing.getFolders().getRoot();
+	this.mainLayout = new MainLayout(this);
 	return true;
     }
 

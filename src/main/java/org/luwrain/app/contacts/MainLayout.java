@@ -12,11 +12,11 @@ import org.luwrain.popups.*;
 final class MainLayout
 {
     private final App app;
-    private ListArea foldersArea = null;
-    private FormArea valuesArea = null;
-    private EditArea notesArea = null;
+    private final ListArea foldersArea;
+    private final FormArea valuesArea;
+    private final EditArea notesArea;
 
-        private ContactsFolder[] folders = new ContactsFolder[0];
+    private ContactsFolder[] folders = new ContactsFolder[0];
     private Contact currentContact = null;
 
     MainLayout(App app)
@@ -360,6 +360,78 @@ AreaLayout getLayout()
 	return false;
     }
     */
+
+        boolean openFolder(ContactsFolder folder)
+    {
+	return false;
+    }
+
+    boolean insertIntoTree(ContactsFolder insertInto)
+    {
+	NullCheck.notNull(insertInto, "insertInto");
+	final String folderTitle = app.getStrings().insertIntoTreePopupValueFolder();
+	final String contactTitle = app.getStrings().insertIntoTreePopupValueContact();
+	final Object res = Popups.fixedList(app.getLuwrain(), app.getStrings().insertIntoTreePopupName(), new String[]{folderTitle, contactTitle});
+	if (res == folderTitle)
+	    return insertFolder(insertInto);
+	    if (res == contactTitle)
+		return insertContact(insertInto);
+return false;
+    }
+
+    private boolean insertFolder(ContactsFolder insertInto)
+    {
+	final String name = Popups.simple(app.getLuwrain(), "Имя новой группы контактов", "Введите имя новой группы:", "");
+	if (name == null)
+	    return false;
+	if (name.trim().isEmpty())
+	{
+	    app.getLuwrain().message("Новая группа контактов не может быть создана с пустым именем", Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	try {
+	    final ContactsFolder f = new ContactsFolder();
+	    f.setTitle(name);
+	    f.setOrderIndex(0);
+	    app.getStoring().getFolders().save(insertInto, f);
+	    return true;
+	}
+	catch(Exception e)
+	{
+	    app.getLuwrain().crash(e);
+	    return false;
+	}
+    }
+
+    private boolean insertContact(ContactsFolder insertInto)
+    {
+	final String name = Popups.simple(app.getLuwrain(), "Имя нового контакта", "Введите имя нового контакта:", "");
+	if (name == null)
+	    return false;
+	if (name.trim().isEmpty())
+	{
+	    app.getLuwrain().message("Новый контакт не может быть создан с пустым именем", Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	try {
+	    final Contact c = new Contact();
+	    c.setTitle(name);
+	    app.getStoring().getContacts().save(insertInto, c);
+	    return true;
+	}
+	catch(Exception e)
+	{
+	    app.getLuwrain().crash(e);
+	    return false;
+	}
+    }
+
+    void setCurrentContact(Contact contact)
+    {
+	NullCheck.notNull(contact, "contact");
+	currentContact = contact;
+    }
+
 
 
         ListArea.Params createFoldersListParams(ListArea.ClickHandler clickHandler)
