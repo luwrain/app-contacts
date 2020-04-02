@@ -9,6 +9,10 @@ import org.luwrain.template.*;
 
 final class App extends AppBase<Strings> implements MonoApp
 {
+    private MainLayout mainLayout = null;
+    private ContactsStoring storing = null;
+    private ContactsFolder foldersRoot = null;
+
     App()
     {
 	super(Strings.NAME, Strings.class);
@@ -16,6 +20,17 @@ final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected boolean onAppInit()
     {
+	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
+	ContactsFolder root = null;
+		try {
+root = storing.getFolders().getRoot();
+	}
+	catch (Exception e)
+	{
+	    getLuwrain().crash(e);
+    }
+		this.foldersRoot = root;
+		this.mainLayout = new MainLayout(this);
 	return true;
     }
 
@@ -31,7 +46,7 @@ final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected AreaLayout getDefaultAreaLayout()
     {
-	return null;//new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, valuesArea, notesArea);
+	return mainLayout.getLayout();
     }
 
     /*
@@ -47,4 +62,15 @@ final class App extends AppBase<Strings> implements MonoApp
 	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
     }
+
+    ContactsStoring getStoring()
+    {
+	return this.storing;
+    }
+
+    ContactsFolder getFoldersRoot()
+    {
+	return this.foldersRoot;
+    }
+    
 }
