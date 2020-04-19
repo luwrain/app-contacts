@@ -7,9 +7,10 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
+import org.luwrain.template.*;
 import org.luwrain.popups.*;
 
-final class MainLayout
+final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 {
     private final App app;
     private final ListArea foldersArea;
@@ -21,55 +22,60 @@ final class MainLayout
 
     MainLayout(App app)
     {
+	NullCheck.notNull(app, "app");
 	this.app = app;
-	this.foldersArea = new ListArea(createFoldersListParams((area, index, obj)->{
-		    NullCheck.notNull(area, "area");
-		    NullCheck.notNull(obj, "obj");
-		    //		    actions.openContact(App.this, obj, valuesArea, notesArea);
-		    return true;
-		})) {
+	this.foldersArea = new ListArea(createFoldersListParams()) {
+		final Actions actions = actions(
+						action("insert-contact", "123", MainLayout.this::proba)
+						);
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
+		    if (app.onInputEvent(this, event))
+			return true;
 		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-			return super.onSystemEvent(event);
+		    if (app.onSystemEvent(this, event))
+			return true;
+		    return super.onSystemEvent(event);
 		}
 	    };
-
 	this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName()){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
+		    if (app.onInputEvent(this, event))
+			return true;
 		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-			return super.onSystemEvent(event);
-		    }
+		    if (app.onSystemEvent(this, event))
+			return true;
+		    return super.onSystemEvent(event);
+		}
 	    };
-
-	final EditArea.Params editParams = new EditArea.Params();
-	editParams.context = new DefaultControlContext(app.getLuwrain());
-	editParams.name = app.getStrings().notesAreaName();
-	this.notesArea = new EditArea(editParams){
+	this.notesArea = new EditArea(createNotesAreaParams()){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
+		    if (app.onInputEvent(this, event))
+			return true;
 		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-			return super.onSystemEvent(event);
+		    if (app.onSystemEvent(this, event))
+			return true;
+		    return super.onSystemEvent(event);
 		}
 	    };
     }
 
-    
     void fillValuesArea(FormArea area)
     {
 	NullCheck.notNull(area, "area");
@@ -100,6 +106,7 @@ final class MainLayout
 	}
 	catch (Exception e)
 	{
+
 	    app.getLuwrain().crash(e);
 	}
     }
@@ -325,9 +332,11 @@ AreaLayout getLayout()
 	}
 	return false;
     }
+    */
 
-    void openContact(App app, Object obj, FormArea valuesArea, EditArea notesArea)
+@Override public boolean onListClick(ListArea area, int index, Object obj)
     {
+    /*
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(valuesArea, "valuesArea");
 	NullCheck.notNull(notesArea, "notesArea");
@@ -338,8 +347,11 @@ AreaLayout getLayout()
 	base.fillValuesArea(valuesArea);
 	base.fillNotesArea(notesArea);
 	luwrain.setActiveArea(valuesArea);
+    */
+	return true;
     }
 
+    /*
     //Returns false if the area must issue an error beep
     boolean insertValue(FormArea valuesArea)
     {
@@ -360,11 +372,6 @@ AreaLayout getLayout()
 	return false;
     }
     */
-
-        boolean openFolder(ContactsFolder folder)
-    {
-	return false;
-    }
 
     boolean insertIntoTree(ContactsFolder insertInto)
     {
@@ -432,16 +439,22 @@ return false;
 	currentContact = contact;
     }
 
-
-
-        ListArea.Params createFoldersListParams(ListArea.ClickHandler clickHandler)
+        ListArea.Params createFoldersListParams()
     {
-	NullCheck.notNull(clickHandler, "clickHandler");
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlContext(app.getLuwrain());
 	params.model = new FoldersListModel();
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = app.getStrings().foldersAreaName();
+	params.clickHandler = this;
+	return params;
+    }
+
+    EditArea.Params createNotesAreaParams()
+    {
+		final EditArea.Params params = new EditArea.Params();
+	params.context = new DefaultControlContext(app.getLuwrain());
+	params.name = app.getStrings().notesAreaName();
 	return params;
     }
 
@@ -460,5 +473,8 @@ return false;
     }
     }
 
-
+    boolean proba()
+    {
+	return false;
+    }
 }
