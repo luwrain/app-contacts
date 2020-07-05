@@ -28,7 +28,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		final Actions actions = actions(
 						action("insert-contact", "123", MainLayout.this::proba)
 						);
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (app.onInputEvent(this, event))
@@ -44,7 +44,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		}
 	    };
 	this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName()){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (app.onInputEvent(this, event))
@@ -60,7 +60,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		}
 	    };
 	this.notesArea = new EditArea(createNotesAreaParams()){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    if (app.onInputEvent(this, event))
 			return true;
