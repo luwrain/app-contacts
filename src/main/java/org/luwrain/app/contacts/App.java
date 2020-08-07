@@ -5,7 +5,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 
 final class App extends AppBase<Strings> implements MonoApp
 {
@@ -15,7 +15,7 @@ final class App extends AppBase<Strings> implements MonoApp
 
     App()
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.contacts");
     }
 
     @Override protected boolean onAppInit() throws Exception
