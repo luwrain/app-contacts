@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.app.contacts;
 
@@ -60,33 +75,26 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	area.clear();
 	if (currentContact == null)
 	    return;
-	try {
-	    area.addEdit("name", "Имя:", currentContact.getTitle(), null, true);
-	    int counter = 1;
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.MAIL)
-		    area.addEdit("mail" + (counter++), "Электронная почта:", v.getValue(), v, true);
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.MOBILE_PHONE)
-		    area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.getValue(), v, true);
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.GROUND_PHONE)
-		    area.addEdit("ground" + (counter++), "Телефон:", v.getValue(), v, true);
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.ADDRESS)
-		    area.addEdit("address" + (counter++), "Адрес:", v.getValue(), v, true);
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.BIRTHDAY)
-		    area.addEdit("birthday" + (counter++), "Дата рождения:", v.getValue(), v, true);
-	    for(ContactValue v: currentContact.getValues())
-		if (v.getType() == ContactValue.SKYPE)
-		    area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
-	}
-	catch (Exception e)
-	{
-
-	    app.getLuwrain().crash(e);
-	}
+	area.addEdit("name", "Имя:", currentContact.getTitle(), null, true);
+	int counter = 1;
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.MAIL)
+		area.addEdit("mail" + (counter++), "Электронная почта:", v.getValue(), v, true);
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.MOBILE_PHONE)
+		area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.getValue(), v, true);
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.GROUND_PHONE)
+		area.addEdit("ground" + (counter++), "Телефон:", v.getValue(), v, true);
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.ADDRESS)
+		area.addEdit("address" + (counter++), "Адрес:", v.getValue(), v, true);
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.BIRTHDAY)
+		area.addEdit("birthday" + (counter++), "Дата рождения:", v.getValue(), v, true);
+	for(ContactValue v: currentContact.getValues())
+	    if (v.getType() == ContactValue.SKYPE)
+		area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
     }
 
     //Returns true on success saving, shows all corresponding error message;
@@ -105,14 +113,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    if (!value.getValue().trim().isEmpty())
 		values.add(value);
 	}
-	try {
-	    currentContact.setValues(values.toArray(new ContactValue[values.size()]));
-	}
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    return false;
-	}
+	currentContact.setValues(values.toArray(new ContactValue[values.size()]));
 	return true;
     }
 
@@ -134,7 +135,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		addressTitle,
 		birthdayTitle,
 		skypeTitle,
-});
+	    });
 	if (res == null)
 	    return false;
 	int type;
@@ -151,113 +152,76 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 			    if (res == skypeTitle)
 				type = ContactValue.SKYPE; else
 				return false;//Should never happen
-	try {
-	    final ContactValue[] oldValues = currentContact.getValues();
-	    final ContactValue[] newValues = new ContactValue[oldValues.length + 1];
-	    for(int i = 0;i < oldValues.length;++i)
-		newValues[i] = oldValues[i];
-	    newValues[newValues.length - 1] = new ContactValue(type, "", false);
-	    currentContact.setValues(newValues);
-	}
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    return false;
-	}
+	final ContactValue[] oldValues = currentContact.getValues();
+	final ContactValue[] newValues = new ContactValue[oldValues.length + 1];
+	for(int i = 0;i < oldValues.length;++i)
+	    newValues[i] = oldValues[i];
+	newValues[newValues.length - 1] = new ContactValue(type, "", false);
+	currentContact.setValues(newValues);
+    return true;
+}
+
+boolean fillNotesArea(EditArea area)
+{
+    String value;
+    value = currentContact.getNotes();
+area.setLines(value.split("\n", -1));
+return true;
+}
+
+boolean saveNotes(EditArea area)
+{
+    if (currentContact == null)
 	return true;
-    }
-
-    boolean fillNotesArea(EditArea area)
+    final StringBuilder b = new StringBuilder();
+    final int count = area.getLineCount();
+    if (count > 0)
     {
-	String value;
-	try {
-	    value = currentContact.getNotes();
-	    }
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    return false;
-	}
-	area.setLines(value.split("\n", -1));
-	return true;
+	b.append(area.getLine(0));
+	for(int i = 1;i < count;++i)
+	    b.append("\n" + area.getLine(i));
     }
+    currentContact.setNotes(b.toString());
+    return true;
+}
 
-    boolean saveNotes(EditArea area)
+boolean deleteFolder(ContactsFolder folder)
+{
+    if (folder.isRoot())
     {
-	if (currentContact == null)
-	    return true;
-	final StringBuilder b = new StringBuilder();
-	final int count = area.getLineCount();
-	if (count > 0)
-	{
-	    b.append(area.getLine(0));
-	    for(int i = 1;i < count;++i)
-		b.append("\n" + area.getLine(i));
-	}
-	try {
-	    currentContact.setNotes(b.toString());
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    	    return false;
-	}
+	app.getLuwrain().message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
+	return false;
     }
+    final Contact[] contacts = app.getStoring().getContacts().load(folder);
+    final ContactsFolder[] subfolders = app.getStoring().getFolders().load(folder);
+    if (contacts != null && contacts.length > 0)
+    {
+	app.getLuwrain().message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
+	return false;
+    }
+    if (subfolders != null && subfolders.length > 0)
+    {
+	app.getLuwrain().message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MessageType.ERROR);
+	return false;
+    }
+    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
+    app.getLuwrain().popup(popup);
+    if (popup.wasCancelled() || !popup.result())
+	return false;
+    app.getStoring().getFolders().delete(folder);
+    return true;
+}
 
-    boolean deleteFolder(ContactsFolder folder)
-    {
-	try {
-	    if (folder.isRoot())
-	    {
-		app.getLuwrain().message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
-		return false;
-	    }
-	    final Contact[] contacts = app.getStoring().getContacts().load(folder);
-	    final ContactsFolder[] subfolders = app.getStoring().getFolders().load(folder);
-	    if (contacts != null && contacts.length > 0)
-	    {
-		app.getLuwrain().message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
-		return false;
-	    }
-	    if (subfolders != null && subfolders.length > 0)
-	    {
-		app.getLuwrain().message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MessageType.ERROR);
-		return false;
-	    }
-	    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
-	    app.getLuwrain().popup(popup);
-	    if (popup.wasCancelled() || !popup.result())
-		return false;
-	    app.getStoring().getFolders().delete(folder);
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    app.getLuwrain().message("Во время попытки удаления группы контактов произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MessageType.ERROR);
-	    return false;
-	}
-    }
-
-    boolean deleteContact(Contact contact)
-    {
-	try {
-	    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
-	    app.getLuwrain().popup(popup);
-	    if (popup.wasCancelled() || !popup.result())
-		return false;
-	    app.getStoring().getContacts().delete(contact);
-	    currentContact = null;//FIXME:maybe only if currentContact == contact
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    app.getLuwrain().message("Во время попытки удаления контакта произошла непредвиденная ошибка:" + e.getMessage(), Luwrain.MessageType.ERROR);
-	    return false;
-	}
-    }
+boolean deleteContact(Contact contact)
+{
+    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
+    app.getLuwrain().popup(popup);
+    if (popup.wasCancelled() || !popup.result())
+	return false;
+    app.getStoring().getContacts().delete(contact);
+    currentContact = null;//FIXME:maybe only if currentContact == contact
+    return true;
+}
 
     /*
     boolean insertIntoTree(ListArea foldersArea)
