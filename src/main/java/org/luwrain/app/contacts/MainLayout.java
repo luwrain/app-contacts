@@ -22,58 +22,37 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 
     MainLayout(App app)
     {
-	NullCheck.notNull(app, "app");
+	super(app);
 	this.app = app;
-	this.foldersArea = new ListArea(createFoldersListParams()) {
-		final Actions actions = actions(
-						action("insert-contact", "123", MainLayout.this::proba)
-						);
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onInputEvent(this, event))
-			return true;
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onSystemEvent(this, event))
-			return true;
-		    return super.onSystemEvent(event);
-		}
-	    };
-	this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName()){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onInputEvent(this, event))
-			return true;
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onSystemEvent(this, event))
-			return true;
-		    return super.onSystemEvent(event);
-		}
-	    };
-	this.notesArea = new EditArea(createNotesAreaParams()){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    if (app.onInputEvent(this, event))
-			return true;
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onSystemEvent(this, event))
-			return true;
-		    return super.onSystemEvent(event);
-		}
-	    };
+	final Actions foldersActions;
+	{
+	    final ListArea.Params params = new ListArea.Params();
+	    params.context = getControlContext();
+	    params.model = new ListUtils.ArrayModel(()->{ return folders; });
+	    params.appearance = new ListUtils.DefaultAppearance(getControlContext());
+	    params.name = app.getStrings().foldersAreaName();
+	    params.clickHandler = this;
+	    this.foldersArea = new ListArea(params);
+	    foldersActions = actions();
+	}
+
+	final Actions valuesActions;
+	{
+	    this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName());
+	    valuesActions = actions();
+	}
+
+		
+	final Actions notesActions;
+	{
+		final EditArea.Params params = new EditArea.Params();
+		params.context = getControlContext();
+	params.name = app.getStrings().notesAreaName();
+	this.notesArea = new EditArea(params);
+	notesActions = actions();
+	}
+
+	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, foldersActions, valuesArea, valuesActions, notesArea, notesActions);
     }
 
     void fillValuesArea(FormArea area)
@@ -281,14 +260,6 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	}
     }
 
-
-
-AreaLayout getLayout()
-    {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, valuesArea, notesArea);
-    }
-
-    
     /*
     boolean insertIntoTree(ListArea foldersArea)
     {
@@ -439,42 +410,7 @@ return false;
 	currentContact = contact;
     }
 
-        ListArea.Params createFoldersListParams()
-    {
-	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlContext(app.getLuwrain());
-	params.model = new FoldersListModel();
-	params.appearance = new ListUtils.DefaultAppearance(params.context);
-	params.name = app.getStrings().foldersAreaName();
-	params.clickHandler = this;
-	return params;
-    }
 
-    EditArea.Params createNotesAreaParams()
-    {
-		final EditArea.Params params = new EditArea.Params();
-	params.context = new DefaultControlContext(app.getLuwrain());
-	params.name = app.getStrings().notesAreaName();
-	return params;
-    }
-
-    final class FoldersListModel implements ListArea.Model
-{
-    @Override public int getItemCount()
-    {
-	return folders.length;
-    }
-    @Override public Object getItem(int index)
-    {
-	return folders[index];
-    }
-    @Override public void refresh()
-    {
-    }
-    }
-
-    boolean proba()
-    {
-	return false;
-    }
 }
+
+	

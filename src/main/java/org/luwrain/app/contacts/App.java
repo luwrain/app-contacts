@@ -38,7 +38,7 @@ final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected AreaLayout getDefaultAreaLayout()
     {
-	return mainLayout.getLayout();
+	return mainLayout.getAreaLayout();
     }
 
     /*
