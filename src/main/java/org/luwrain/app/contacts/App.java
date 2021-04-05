@@ -23,6 +23,7 @@ final class App extends AppBase<Strings> implements MonoApp
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
 	this.foldersRoot = storing.getFolders().getRoot();
 	this.mainLayout = new MainLayout(this);
+	setAppName(getStrings().appName());
 	return true;
     }
 

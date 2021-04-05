@@ -42,14 +42,13 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    valuesActions = actions();
 	}
 
-		
 	final Actions notesActions;
 	{
-		final EditArea.Params params = new EditArea.Params();
-		params.context = getControlContext();
-	params.name = app.getStrings().notesAreaName();
-	this.notesArea = new EditArea(params);
-	notesActions = actions();
+	    final EditArea.Params params = new EditArea.Params();
+	    params.context = getControlContext();
+	    params.name = app.getStrings().notesAreaName();
+	    this.notesArea = new EditArea(params);
+	    notesActions = actions();
 	}
 
 	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, foldersActions, valuesArea, valuesActions, notesArea, notesActions);
