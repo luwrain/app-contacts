@@ -37,7 +37,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     private final EditArea notesArea;
 
     private ContactsFolder openedFolder = null;
-    private ContactsFolder[] childFolders = new ContactsFolder[0];
+    private final List items = new ArrayList();
     private Contact currentContact = null;
 
     MainLayout(App app)
@@ -47,19 +47,21 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	this.openedFolder = app.getStoring().getFolders().getRoot();
 	this.folders = app.getStoring().getFolders();
 	this.contacts = app.getStoring().getContacts();
+	updateItems();
+
 	final Actions foldersActions;
 	{
 	    final ListArea.Params params = new ListArea.Params();
 	    params.context = getControlContext();
-	    params.model = new ListUtils.ArrayModel(()->{ return childFolders; });
-	    params.appearance = new ListUtils.DefaultAppearance(getControlContext());
+	    params.model = new ListUtils.ListModel(items);
+	    params.appearance = new FoldersAppearance(app);
 	    params.name = app.getStrings().foldersAreaName();
 	    params.clickHandler = this;
 	    this.foldersArea = new ListArea(params);
 	    foldersActions = actions(
 				     action("new-folder", "Новая группа", new InputEvent(InputEvent.Special.INSERT, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actNewFolder),
-				     				     action("new-contact", "Новый контакт", new InputEvent(InputEvent.Special.INSERT), this::actNewContact)
-);
+				     action("new-contact", "Новый контакт", new InputEvent(InputEvent.Special.INSERT), this::actNewContact)
+				     );
 	}
 
 	final Actions valuesActions;
@@ -84,21 +86,32 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     private boolean actNewFolder()
     {
 	final String name = app.getConv().newFolderName();
+	if (name == null || name.trim().isEmpty())
+	    return true;
+	final ContactsFolder f = new ContactsFolder();
+	f.setTitle(name.trim());
+	folders.save(openedFolder, f);
+	updateItems();
 	return true;
     }
 
         private boolean actNewContact()
     {
 	final String name = app.getConv().newContactName();
-
 		if (name == null || name.trim().isEmpty())
 	    return true;
 	final Contact c = new Contact();
 	c.setTitle(name);
 	contacts.save(openedFolder, c);
-
-	
+	updateItems();
 	return true;
+    }
+
+    private void updateItems()
+    {
+	items.clear();
+	items.addAll(Arrays.asList(folders.load(openedFolder)));
+	items.addAll(Arrays.asList(contacts.load(openedFolder)));
     }
 
 
@@ -111,22 +124,19 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	area.addEdit("name", "Имя:", currentContact.getTitle(), null, true);
 	int counter = 1;
 	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.MAIL)
+	    if (v.getType() == ContactValue.Type.MAIL)
 		area.addEdit("mail" + (counter++), "Электронная почта:", v.getValue(), v, true);
 	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.MOBILE_PHONE)
+	    if (v.getType() == ContactValue.Type.PHONE)
 		area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.getValue(), v, true);
 	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.GROUND_PHONE)
-		area.addEdit("ground" + (counter++), "Телефон:", v.getValue(), v, true);
-	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.ADDRESS)
+	    if (v.getType() == ContactValue.Type.ADDRESS)
 		area.addEdit("address" + (counter++), "Адрес:", v.getValue(), v, true);
 	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.BIRTHDAY)
+	    if (v.getType() == ContactValue.Type.BIRTHDAY)
 		area.addEdit("birthday" + (counter++), "Дата рождения:", v.getValue(), v, true);
 	for(ContactValue v: currentContact.getValues())
-	    if (v.getType() == ContactValue.SKYPE)
+	    if (v.getType() == ContactValue.Type.SKYPE)
 		area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
     }
 
@@ -171,19 +181,17 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    });
 	if (res == null)
 	    return false;
-	int type;
+	final ContactValue.Type type;
 	if (res == mailTitle)
-	    type = ContactValue.MAIL; else
+	    type = ContactValue.Type.MAIL; else
 	    if (res == mobileTitle)
-		type = ContactValue.MOBILE_PHONE; else
-		if (res == phoneTitle)
-		    type = ContactValue.GROUND_PHONE; else
+		type = ContactValue.Type.PHONE; else
 		    if (res == addressTitle)
-			type = ContactValue.ADDRESS; else
+			type = ContactValue.Type.ADDRESS; else
 			if (res == birthdayTitle)
-			    type = ContactValue.BIRTHDAY; else
+			    type = ContactValue.Type.BIRTHDAY; else
 			    if (res == skypeTitle)
-				type = ContactValue.SKYPE; else
+				type = ContactValue.Type.SKYPE; else
 				return false;//Should never happen
 	final ContactValue[] oldValues = currentContact.getValues();
 	final ContactValue[] newValues = new ContactValue[oldValues.length + 1];
