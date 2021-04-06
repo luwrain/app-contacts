@@ -22,27 +22,38 @@ import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
 import org.luwrain.app.base.*;
 
-final class App extends AppBase<Strings> implements MonoApp
+public final class App extends AppBase<Strings> implements MonoApp
 {
-    private MainLayout mainLayout = null;
     private ContactsStoring storing = null;
-    private ContactsFolder foldersRoot = null;
+    private Conversations conv = null;
+    private MainLayout mainLayout = null;
 
-    App()
+    public App()
     {
 	super(Strings.NAME, Strings.class, "luwrain.contacts");
     }
 
     @Override protected boolean onAppInit() throws Exception
     {
+	this.conv = new Conversations(this);
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
-	this.foldersRoot = storing.getFolders().getRoot();
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return true;
     }
 
-    void ensureEverythingSaved()
+    @Override public boolean onEscape(InputEvent event)
+    {
+	closeApp();
+	return true;
+    }
+
+    @Override protected AreaLayout getDefaultAreaLayout()
+    {
+	return mainLayout.getAreaLayout();
+    }
+
+        void ensureEverythingSaved()
     {
 	/*
 	if (!base.hasCurrentContact())
@@ -50,11 +61,6 @@ final class App extends AppBase<Strings> implements MonoApp
 	base.saveForm(valuesArea);
 	base.saveNotes(notesArea);
 	*/
-    }
-
-    @Override protected AreaLayout getDefaultAreaLayout()
-    {
-	return mainLayout.getAreaLayout();
     }
 
     /*
@@ -71,14 +77,13 @@ final class App extends AppBase<Strings> implements MonoApp
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 
+    Conversations getConv()
+    {
+	return this.conv;
+    }
+
     ContactsStoring getStoring()
     {
 	return this.storing;
     }
-
-    ContactsFolder getFoldersRoot()
-    {
-	return this.foldersRoot;
-    }
-    
 }

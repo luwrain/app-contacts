@@ -22,33 +22,44 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.contacts.*;
 import org.luwrain.app.base.*;
 import org.luwrain.popups.*;
 
 final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 {
     private final App app;
+    private final ContactsFolders folders;
+    private final Contacts contacts;
+
     private final ListArea foldersArea;
     private final FormArea valuesArea;
     private final EditArea notesArea;
 
-    private ContactsFolder[] folders = new ContactsFolder[0];
+    private ContactsFolder openedFolder = null;
+    private ContactsFolder[] childFolders = new ContactsFolder[0];
     private Contact currentContact = null;
 
     MainLayout(App app)
     {
 	super(app);
 	this.app = app;
+	this.openedFolder = app.getStoring().getFolders().getRoot();
+	this.folders = app.getStoring().getFolders();
+	this.contacts = app.getStoring().getContacts();
 	final Actions foldersActions;
 	{
 	    final ListArea.Params params = new ListArea.Params();
 	    params.context = getControlContext();
-	    params.model = new ListUtils.ArrayModel(()->{ return folders; });
+	    params.model = new ListUtils.ArrayModel(()->{ return childFolders; });
 	    params.appearance = new ListUtils.DefaultAppearance(getControlContext());
 	    params.name = app.getStrings().foldersAreaName();
 	    params.clickHandler = this;
 	    this.foldersArea = new ListArea(params);
-	    foldersActions = actions();
+	    foldersActions = actions(
+				     action("new-folder", "Новая группа", new InputEvent(InputEvent.Special.INSERT, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actNewFolder),
+				     				     action("new-contact", "Новый контакт", new InputEvent(InputEvent.Special.INSERT), this::actNewContact)
+);
 	}
 
 	final Actions valuesActions;
@@ -62,12 +73,34 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    final EditArea.Params params = new EditArea.Params();
 	    params.context = getControlContext();
 	    params.name = app.getStrings().notesAreaName();
+	    params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext());
 	    this.notesArea = new EditArea(params);
 	    notesActions = actions();
 	}
 
 	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, foldersActions, valuesArea, valuesActions, notesArea, notesActions);
     }
+
+    private boolean actNewFolder()
+    {
+	final String name = app.getConv().newFolderName();
+	return true;
+    }
+
+        private boolean actNewContact()
+    {
+	final String name = app.getConv().newContactName();
+
+		if (name == null || name.trim().isEmpty())
+	    return true;
+	final Contact c = new Contact();
+	c.setTitle(name);
+	contacts.save(openedFolder, c);
+
+	
+	return true;
+    }
+
 
     void fillValuesArea(FormArea area)
     {
