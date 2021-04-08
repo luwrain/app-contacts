@@ -37,8 +37,8 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     private final EditArea notesArea;
 
     private ContactsFolder openedFolder = null;
+        private Contact openedContact = null;
     private final List items = new ArrayList();
-    private Contact currentContact = null;
 
     MainLayout(App app)
     {
@@ -119,23 +119,23 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     {
 	NullCheck.notNull(area, "area");
 	area.clear();
-	if (currentContact == null)
+	if (openedContact == null)
 	    return;
-	area.addEdit("name", "Имя:", currentContact.getTitle(), null, true);
+	area.addEdit("name", "Имя:", openedContact.getTitle(), null, true);
 	int counter = 1;
-	for(ContactValue v: currentContact.getValues())
+	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.MAIL)
 		area.addEdit("mail" + (counter++), "Электронная почта:", v.getValue(), v, true);
-	for(ContactValue v: currentContact.getValues())
+	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.PHONE)
 		area.addEdit("mobile" + (counter++), "Мобильный телефон:", v.getValue(), v, true);
-	for(ContactValue v: currentContact.getValues())
+	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.ADDRESS)
 		area.addEdit("address" + (counter++), "Адрес:", v.getValue(), v, true);
-	for(ContactValue v: currentContact.getValues())
+	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.BIRTHDAY)
 		area.addEdit("birthday" + (counter++), "Дата рождения:", v.getValue(), v, true);
-	for(ContactValue v: currentContact.getValues())
+	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.SKYPE)
 		area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
     }
@@ -143,9 +143,9 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     //Returns true on success saving, shows all corresponding error message;
     boolean saveForm(FormArea area)
     {
-	if (currentContact == null)
+	if (openedContact == null)
 	    return false;
-	final LinkedList<ContactValue> values = new LinkedList<ContactValue>();
+	final List<ContactValue> values = new ArrayList<ContactValue>();
 	for(int i = 0;i < area.getItemCount();++i)
 	{
 	    final Object obj = area.getItemObj(i);
@@ -156,14 +156,14 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    if (!value.getValue().trim().isEmpty())
 		values.add(value);
 	}
-	currentContact.setValues(values.toArray(new ContactValue[values.size()]));
+	openedContact.setValues(values.toArray(new ContactValue[values.size()]));
 	return true;
     }
 
     //Returns true if new value is really added, shows all corresponding error messages;
     boolean insertValue()
     {
-	if (currentContact == null)
+	if (openedContact == null)
 	    return false;
 	final String mailTitle = "Электронная почта";
 	final String mobileTitle = "Мобильный телефон";
@@ -193,26 +193,26 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 			    if (res == skypeTitle)
 				type = ContactValue.Type.SKYPE; else
 				return false;//Should never happen
-	final ContactValue[] oldValues = currentContact.getValues();
+	final ContactValue[] oldValues = openedContact.getValues();
 	final ContactValue[] newValues = new ContactValue[oldValues.length + 1];
 	for(int i = 0;i < oldValues.length;++i)
 	    newValues[i] = oldValues[i];
 	newValues[newValues.length - 1] = new ContactValue(type, "", false);
-	currentContact.setValues(newValues);
+	openedContact.setValues(newValues);
     return true;
 }
 
 boolean fillNotesArea(EditArea area)
 {
     String value;
-    value = currentContact.getNotes();
+    value = openedContact.getNotes();
 area.setLines(value.split("\n", -1));
 return true;
 }
 
 boolean saveNotes(EditArea area)
 {
-    if (currentContact == null)
+    if (openedContact == null)
 	return true;
     final StringBuilder b = new StringBuilder();
     final int count = area.getLineCount();
@@ -222,7 +222,7 @@ boolean saveNotes(EditArea area)
 	for(int i = 1;i < count;++i)
 	    b.append("\n" + area.getLine(i));
     }
-    currentContact.setNotes(b.toString());
+    openedContact.setNotes(b.toString());
     return true;
 }
 
@@ -260,7 +260,7 @@ boolean deleteContact(Contact contact)
     if (popup.wasCancelled() || !popup.result())
 	return false;
     app.getStoring().getContacts().delete(contact);
-    currentContact = null;//FIXME:maybe only if currentContact == contact
+    openedContact = null;//FIXME:maybe only if currentContact == contact
     return true;
 }
 
@@ -311,18 +311,13 @@ boolean deleteContact(Contact contact)
 
 @Override public boolean onListClick(ListArea area, int index, Object obj)
     {
-    /*
-	NullCheck.notNull(app, "app");
-	NullCheck.notNull(valuesArea, "valuesArea");
-	NullCheck.notNull(notesArea, "notesArea");
 	if (obj == null || !(obj instanceof Contact))
-	    return;
-	app.ensureEverythingSaved();
-	base.setCurrentContact((Contact)obj);
-	base.fillValuesArea(valuesArea);
-	base.fillNotesArea(notesArea);
-	luwrain.setActiveArea(valuesArea);
-    */
+	    return false;
+	ensureEverythingSaved();
+this.openedContact = (Contact)obj;
+fillValuesArea(valuesArea);
+fillNotesArea(notesArea);
+	setActiveArea(valuesArea);
 	return true;
     }
 
@@ -408,13 +403,11 @@ return false;
 	}
     }
 
-    void setCurrentContact(Contact contact)
+            void ensureEverythingSaved()
     {
-	NullCheck.notNull(contact, "contact");
-	currentContact = contact;
+	if (openedContact == null)
+	    return;
+saveForm(valuesArea);
+saveNotes(notesArea);
     }
-
-
 }
-
-	

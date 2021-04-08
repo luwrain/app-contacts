@@ -53,23 +53,11 @@ public final class App extends AppBase<Strings> implements MonoApp
 	return mainLayout.getAreaLayout();
     }
 
-        void ensureEverythingSaved()
-    {
-	/*
-	if (!base.hasCurrentContact())
-	    return;
-	base.saveForm(valuesArea);
-	base.saveNotes(notesArea);
-	*/
-    }
-
-    /*
     @Override public void closeApp()
     {
-	ensureEverythingSaved();
-	luwrain.closeApp();
+	mainLayout.ensureEverythingSaved();
+	super.closeApp();
     }
-    */
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
