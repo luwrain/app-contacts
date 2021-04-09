@@ -37,7 +37,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     private final EditArea notesArea;
 
     private ContactsFolder openedFolder = null;
-        private Contact openedContact = null;
+    private Contact openedContact = null;
     private final List items = new ArrayList();
 
     MainLayout(App app)
@@ -67,7 +67,9 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	final Actions valuesActions;
 	{
 	    this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName());
-	    valuesActions = actions();
+	    valuesActions = actions(
+				    action("new-value", "Добавить новое значение", new InputEvent(InputEvent.Special.INSERT), this::actNewValue)
+);
 	}
 
 	final Actions notesActions;
@@ -81,6 +83,18 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	}
 
 	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, foldersActions, valuesArea, valuesActions, notesArea, notesActions);
+    }
+
+    @Override public boolean onListClick(ListArea area, int index, Object obj)
+    {
+	if (obj == null || !(obj instanceof Contact))
+	    return false;
+	ensureEverythingSaved();
+this.openedContact = (Contact)obj;
+fillValuesArea(valuesArea);
+fillNotesArea(notesArea);
+	setActiveArea(valuesArea);
+	return true;
     }
 
     private boolean actNewFolder()
@@ -107,6 +121,22 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	return true;
     }
 
+    private boolean actNewValue()
+    {
+	if (openedContact == null)
+	    return false;
+	final ContactValue.Type type = app.getConv().newContactValueType();
+	if (type == null)
+	    return true;
+	final ContactValue newValue = new ContactValue();
+	newValue.setType(type);
+	final ContactValue[] oldValues = openedContact.getValues();
+	final ContactValue[] newValues = Arrays.copyOf(oldValues, oldValues.length + 1);
+	newValues[newValues.length - 1] = newValue;
+	openedContact.setValues(newValues);
+    return true;
+}
+
     private void updateItems()
     {
 	items.clear();
@@ -114,8 +144,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	items.addAll(Arrays.asList(contacts.load(openedFolder)));
     }
 
-
-    void fillValuesArea(FormArea area)
+    private void fillValuesArea(FormArea area)
     {
 	NullCheck.notNull(area, "area");
 	area.clear();
@@ -140,11 +169,10 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
     }
 
-    //Returns true on success saving, shows all corresponding error message;
-    boolean saveForm(FormArea area)
+    private void saveForm(FormArea area)
     {
 	if (openedContact == null)
-	    return false;
+	    return;
 	final List<ContactValue> values = new ArrayList<ContactValue>();
 	for(int i = 0;i < area.getItemCount();++i)
 	{
@@ -152,57 +180,15 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    if (obj == null || !(obj instanceof ContactValue))
 		continue;
 	    final ContactValue value = (ContactValue)obj;
-	    //FIXME:	    value.setValue(area.getEnteredText(i));
+value.setValue(area.getEnteredText(i));
 	    if (!value.getValue().trim().isEmpty())
 		values.add(value);
 	}
 	openedContact.setValues(values.toArray(new ContactValue[values.size()]));
-	return true;
+	return;
     }
 
-    //Returns true if new value is really added, shows all corresponding error messages;
-    boolean insertValue()
-    {
-	if (openedContact == null)
-	    return false;
-	final String mailTitle = "Электронная почта";
-	final String mobileTitle = "Мобильный телефон";
-	final String phoneTitle = "Телефон";
-	final String addressTitle = "Адрес";
-	final String birthdayTitle = "Дата рождения";
-	final String skypeTitle = "Skype";
-	final Object res = Popups.fixedList(app.getLuwrain(), "Выберите тип нового значения:", new String[]{
-		mailTitle,
-		mobileTitle,
-		phoneTitle,
-		addressTitle,
-		birthdayTitle,
-		skypeTitle,
-	    });
-	if (res == null)
-	    return false;
-	final ContactValue.Type type;
-	if (res == mailTitle)
-	    type = ContactValue.Type.MAIL; else
-	    if (res == mobileTitle)
-		type = ContactValue.Type.PHONE; else
-		    if (res == addressTitle)
-			type = ContactValue.Type.ADDRESS; else
-			if (res == birthdayTitle)
-			    type = ContactValue.Type.BIRTHDAY; else
-			    if (res == skypeTitle)
-				type = ContactValue.Type.SKYPE; else
-				return false;//Should never happen
-	final ContactValue[] oldValues = openedContact.getValues();
-	final ContactValue[] newValues = new ContactValue[oldValues.length + 1];
-	for(int i = 0;i < oldValues.length;++i)
-	    newValues[i] = oldValues[i];
-	newValues[newValues.length - 1] = new ContactValue(type, "", false);
-	openedContact.setValues(newValues);
-    return true;
-}
-
-boolean fillNotesArea(EditArea area)
+private boolean fillNotesArea(EditArea area)
 {
     String value;
     value = openedContact.getNotes();
@@ -210,7 +196,7 @@ area.setLines(value.split("\n", -1));
 return true;
 }
 
-boolean saveNotes(EditArea area)
+private boolean saveNotes(EditArea area)
 {
     if (openedContact == null)
 	return true;
@@ -226,7 +212,7 @@ boolean saveNotes(EditArea area)
     return true;
 }
 
-boolean deleteFolder(ContactsFolder folder)
+private boolean deleteFolder(ContactsFolder folder)
 {
     if (folder.isRoot())
     {
@@ -253,7 +239,7 @@ boolean deleteFolder(ContactsFolder folder)
     return true;
 }
 
-boolean deleteContact(Contact contact)
+private boolean deleteContact(Contact contact)
 {
     final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
     app.getLuwrain().popup(popup);
@@ -264,62 +250,6 @@ boolean deleteContact(Contact contact)
     return true;
 }
 
-    /*
-    boolean insertIntoTree(ListArea foldersArea)
-    {
-	NullCheck.notNull(foldersArea, "foldersArea");
-	final Object selected = foldersArea.selected();
-	if (selected == null || !(selected instanceof FolderWrapper))
-	    return false;
-	final FolderWrapper wrapper = (FolderWrapper)selected;
-	if (!base.insertIntoTree(wrapper.folder()))
-	    return true;
-	foldersArea.refresh();
-	return true;
-    }
-
-    boolean deleteFromTree(ListArea foldersArea, FormArea valuesArea, EditArea notesArea)
-    {
-	NullCheck.notNull(foldersArea, "foldersArea");
-	NullCheck.notNull(valuesArea, "valuesArea");
-	NullCheck.notNull(notesArea, "notesArea");
-	final Object selected = foldersArea.selected();
-	if (selected == null ||  (
-				  !(selected instanceof FolderWrapper) && !(selected instanceof Contact)))
-	    return false;
-	if (selected instanceof FolderWrapper)
-	{
-	    final FolderWrapper wrapper = (FolderWrapper)selected;
-	    if (base.deleteFolder(wrapper.folder()))
-		foldersArea.refresh();
-	    return true;
-	}
-	if (selected instanceof Contact)
-	{
-	    final Contact contact = (Contact)selected;
-	    if (base.deleteContact(contact))
-	    {
-		foldersArea.refresh();
-		valuesArea.clear();
-		notesArea.clear();
-	    }
-	    return true;
-	}
-	return false;
-    }
-    */
-
-@Override public boolean onListClick(ListArea area, int index, Object obj)
-    {
-	if (obj == null || !(obj instanceof Contact))
-	    return false;
-	ensureEverythingSaved();
-this.openedContact = (Contact)obj;
-fillValuesArea(valuesArea);
-fillNotesArea(notesArea);
-	setActiveArea(valuesArea);
-	return true;
-    }
 
     /*
     //Returns false if the area must issue an error beep
@@ -335,73 +265,7 @@ fillNotesArea(notesArea);
 	base.fillValuesArea(valuesArea);
 	return true;
     }
-
-    boolean deleteValue()
-    {
-	//Currently the user can leave the value empty to delete it on saving
-	return false;
-    }
     */
-
-    boolean insertIntoTree(ContactsFolder insertInto)
-    {
-	NullCheck.notNull(insertInto, "insertInto");
-	final String folderTitle = app.getStrings().insertIntoTreePopupValueFolder();
-	final String contactTitle = app.getStrings().insertIntoTreePopupValueContact();
-	final Object res = Popups.fixedList(app.getLuwrain(), app.getStrings().insertIntoTreePopupName(), new String[]{folderTitle, contactTitle});
-	if (res == folderTitle)
-	    return insertFolder(insertInto);
-	    if (res == contactTitle)
-		return insertContact(insertInto);
-return false;
-    }
-
-    private boolean insertFolder(ContactsFolder insertInto)
-    {
-	final String name = Popups.simple(app.getLuwrain(), "Имя новой группы контактов", "Введите имя новой группы:", "");
-	if (name == null)
-	    return false;
-	if (name.trim().isEmpty())
-	{
-	    app.getLuwrain().message("Новая группа контактов не может быть создана с пустым именем", Luwrain.MessageType.ERROR);
-	    return false;
-	}
-	try {
-	    final ContactsFolder f = new ContactsFolder();
-	    f.setTitle(name);
-	    f.setOrderIndex(0);
-	    app.getStoring().getFolders().save(insertInto, f);
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    return false;
-	}
-    }
-
-    private boolean insertContact(ContactsFolder insertInto)
-    {
-	final String name = Popups.simple(app.getLuwrain(), "Имя нового контакта", "Введите имя нового контакта:", "");
-	if (name == null)
-	    return false;
-	if (name.trim().isEmpty())
-	{
-	    app.getLuwrain().message("Новый контакт не может быть создан с пустым именем", Luwrain.MessageType.ERROR);
-	    return false;
-	}
-	try {
-	    final Contact c = new Contact();
-	    c.setTitle(name);
-	    app.getStoring().getContacts().save(insertInto, c);
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    app.getLuwrain().crash(e);
-	    return false;
-	}
-    }
 
             void ensureEverythingSaved()
     {

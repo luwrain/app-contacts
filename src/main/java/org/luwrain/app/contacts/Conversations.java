@@ -19,6 +19,7 @@ package org.luwrain.app.contacts;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.contacts.*;
 import org.luwrain.popups.*;
 
 final class Conversations
@@ -43,5 +44,27 @@ final class Conversations
     String newFolderName()
     {
 	return Popups.textNotEmpty(luwrain, "Новая группа", "Имя новой группы контактов:", "");
+    }
+
+    ContactValue.Type newContactValueType()
+    {
+		final String mailTitle = "Электронная почта";
+	final String phoneTitle = "Телефон";
+	final String addressTitle = "Адрес";
+	final String birthdayTitle = "Дата рождения";
+	final String skypeTitle = "Skype";
+	final Object res = Popups.fixedList(luwrain, "Тип нового значения:", new String[]{mailTitle, phoneTitle, addressTitle, birthdayTitle, skypeTitle});
+	if (res == null)
+	    return null;
+	final ContactValue.Type type;
+	if (res == mailTitle)
+	    return ContactValue.Type.MAIL;
+		    if (res == addressTitle)
+			return ContactValue.Type.ADDRESS;
+			if (res == birthdayTitle)
+			    return ContactValue.Type.BIRTHDAY;
+			    if (res == skypeTitle)
+				return ContactValue.Type.SKYPE;
+				return null;//Should never happen
     }
 }
