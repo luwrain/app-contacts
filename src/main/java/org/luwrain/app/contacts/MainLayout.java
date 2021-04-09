@@ -69,7 +69,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName());
 	    valuesActions = actions(
 				    action("new-value", "Добавить новое значение", new InputEvent(InputEvent.Special.INSERT), this::actNewValue)
-);
+				    );
 	}
 
 	final Actions notesActions;
@@ -90,9 +90,9 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	if (obj == null || !(obj instanceof Contact))
 	    return false;
 	ensureEverythingSaved();
-this.openedContact = (Contact)obj;
-fillValuesArea(valuesArea);
-fillNotesArea(notesArea);
+	this.openedContact = (Contact)obj;
+	fillValuesArea(valuesArea);
+	fillNotesArea(notesArea);
 	setActiveArea(valuesArea);
 	return true;
     }
@@ -109,10 +109,10 @@ fillNotesArea(notesArea);
 	return true;
     }
 
-        private boolean actNewContact()
+    private boolean actNewContact()
     {
 	final String name = app.getConv().newContactName();
-		if (name == null || name.trim().isEmpty())
+	if (name == null || name.trim().isEmpty())
 	    return true;
 	final Contact c = new Contact();
 	c.setTitle(name);
@@ -134,8 +134,8 @@ fillNotesArea(notesArea);
 	final ContactValue[] newValues = Arrays.copyOf(oldValues, oldValues.length + 1);
 	newValues[newValues.length - 1] = newValue;
 	openedContact.setValues(newValues);
-    return true;
-}
+	return true;
+    }
 
     private void updateItems()
     {
@@ -180,7 +180,7 @@ fillNotesArea(notesArea);
 	    if (obj == null || !(obj instanceof ContactValue))
 		continue;
 	    final ContactValue value = (ContactValue)obj;
-value.setValue(area.getEnteredText(i));
+	    value.setValue(area.getEnteredText(i));
 	    if (!value.getValue().trim().isEmpty())
 		values.add(value);
 	}
@@ -188,68 +188,67 @@ value.setValue(area.getEnteredText(i));
 	return;
     }
 
-private boolean fillNotesArea(EditArea area)
-{
-    String value;
-    value = openedContact.getNotes();
-area.setLines(value.split("\n", -1));
-return true;
-}
-
-private boolean saveNotes(EditArea area)
-{
-    if (openedContact == null)
+    private boolean fillNotesArea(EditArea area)
+    {
+	String value;
+	value = openedContact.getNotes();
+	area.setLines(value.split("\n", -1));
 	return true;
-    final StringBuilder b = new StringBuilder();
-    final int count = area.getLineCount();
-    if (count > 0)
-    {
-	b.append(area.getLine(0));
-	for(int i = 1;i < count;++i)
-	    b.append("\n" + area.getLine(i));
     }
-    openedContact.setNotes(b.toString());
-    return true;
-}
 
-private boolean deleteFolder(ContactsFolder folder)
-{
-    if (folder.isRoot())
+    private boolean saveNotes(EditArea area)
     {
-	app.getLuwrain().message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
-	return false;
+	if (openedContact == null)
+	    return true;
+	final StringBuilder b = new StringBuilder();
+	final int count = area.getLineCount();
+	if (count > 0)
+	{
+	    b.append(area.getLine(0));
+	    for(int i = 1;i < count;++i)
+		b.append("\n" + area.getLine(i));
+	}
+	openedContact.setNotes(b.toString());
+	return true;
     }
-    final Contact[] contacts = app.getStoring().getContacts().load(folder);
-    final ContactsFolder[] subfolders = app.getStoring().getFolders().load(folder);
-    if (contacts != null && contacts.length > 0)
-    {
-	app.getLuwrain().message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
-	return false;
-    }
-    if (subfolders != null && subfolders.length > 0)
-    {
-	app.getLuwrain().message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MessageType.ERROR);
-	return false;
-    }
-    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
-    app.getLuwrain().popup(popup);
-    if (popup.wasCancelled() || !popup.result())
-	return false;
-    app.getStoring().getFolders().delete(folder);
-    return true;
-}
 
-private boolean deleteContact(Contact contact)
-{
-    final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
-    app.getLuwrain().popup(popup);
-    if (popup.wasCancelled() || !popup.result())
-	return false;
-    app.getStoring().getContacts().delete(contact);
-    openedContact = null;//FIXME:maybe only if currentContact == contact
-    return true;
-}
+    private boolean deleteFolder(ContactsFolder folder)
+    {
+	if (folder.isRoot())
+	{
+	    app.getLuwrain().message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	final Contact[] contacts = app.getStoring().getContacts().load(folder);
+	final ContactsFolder[] subfolders = app.getStoring().getFolders().load(folder);
+	if (contacts != null && contacts.length > 0)
+	{
+	    app.getLuwrain().message("Выделенная группа содержит контакты и не может быть удалена", Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	if (subfolders != null && subfolders.length > 0)
+	{
+	    app.getLuwrain().message("Выделенная группа содержит вложенные группы и не может быть удалена", Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить группу контактов \"" + folder.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
+	app.getLuwrain().popup(popup);
+	if (popup.wasCancelled() || !popup.result())
+	    return false;
+	app.getStoring().getFolders().delete(folder);
+	return true;
+    }
 
+    private boolean deleteContact(Contact contact)
+    {
+	final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
+	app.getLuwrain().popup(popup);
+	if (popup.wasCancelled() || !popup.result())
+	    return false;
+	app.getStoring().getContacts().delete(contact);
+	openedContact = null;//FIXME:maybe only if currentContact == contact
+	return true;
+    }
 
     /*
     //Returns false if the area must issue an error beep
@@ -267,11 +266,11 @@ private boolean deleteContact(Contact contact)
     }
     */
 
-            void ensureEverythingSaved()
+    void ensureEverythingSaved()
     {
 	if (openedContact == null)
 	    return;
-saveForm(valuesArea);
-saveNotes(notesArea);
+	saveForm(valuesArea);
+	saveNotes(notesArea);
     }
 }

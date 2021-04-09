@@ -48,7 +48,7 @@ final class Conversations
 
     ContactValue.Type newContactValueType()
     {
-		final String mailTitle = "Электронная почта";
+	final String mailTitle = "Электронная почта";
 	final String phoneTitle = "Телефон";
 	final String addressTitle = "Адрес";
 	final String birthdayTitle = "Дата рождения";
@@ -59,12 +59,12 @@ final class Conversations
 	final ContactValue.Type type;
 	if (res == mailTitle)
 	    return ContactValue.Type.MAIL;
-		    if (res == addressTitle)
-			return ContactValue.Type.ADDRESS;
-			if (res == birthdayTitle)
-			    return ContactValue.Type.BIRTHDAY;
-			    if (res == skypeTitle)
-				return ContactValue.Type.SKYPE;
-				return null;//Should never happen
+	if (res == addressTitle)
+	    return ContactValue.Type.ADDRESS;
+	if (res == birthdayTitle)
+	    return ContactValue.Type.BIRTHDAY;
+	if (res == skypeTitle)
+	    return ContactValue.Type.SKYPE;
+	return null;//Should never happen
     }
 }
