@@ -33,24 +33,19 @@ public final class App extends AppBase<Strings> implements MonoApp
 	super(Strings.NAME, Strings.class, "luwrain.contacts");
     }
 
-    @Override protected boolean onAppInit() throws Exception
+    @Override protected AreaLayout onAppInit() throws Exception
     {
 	this.conv = new Conversations(this);
 	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
-	return true;
+	return mainLayout.getAreaLayout();
     }
 
     @Override public boolean onEscape(InputEvent event)
     {
 	closeApp();
 	return true;
-    }
-
-    @Override protected AreaLayout getDefaultAreaLayout()
-    {
-	return mainLayout.getAreaLayout();
     }
 
     @Override public void closeApp()
