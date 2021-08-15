@@ -42,7 +42,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	return mainLayout.getAreaLayout();
     }
 
-    @Override public boolean onEscape(InputEvent event)
+    @Override public boolean onEscape()
     {
 	closeApp();
 	return true;
