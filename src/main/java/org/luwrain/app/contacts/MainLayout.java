@@ -192,7 +192,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     {
 	String value;
 	value = openedContact.getNotes();
-	area.setLines(value.split("\n", -1));
+	area.setText(value.split("\n", -1));
 	return true;
     }
 
