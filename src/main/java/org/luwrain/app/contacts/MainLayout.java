@@ -32,9 +32,9 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     private final ContactsFolders folders;
     private final Contacts contacts;
 
-    private final ListArea foldersArea;
-    private final FormArea valuesArea;
-    private final EditArea notesArea;
+    final ListArea foldersArea;
+    final FormArea valuesArea;
+    final EditArea notesArea;
 
     private ContactsFolder openedFolder = null;
     private Contact openedContact = null;
@@ -49,38 +49,27 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	this.contacts = app.getStoring().getContacts();
 	updateItems();
 
-	final Actions foldersActions;
-	{
-	    final ListArea.Params params = new ListArea.Params();
-	    params.context = getControlContext();
-	    params.model = new ListUtils.ListModel(items);
-	    params.appearance = new FoldersAppearance(app);
-	    params.name = app.getStrings().foldersAreaName();
-	    params.clickHandler = this;
-	    this.foldersArea = new ListArea(params);
-	    foldersActions = actions(
-				     action("new-folder", "Новая группа", new InputEvent(InputEvent.Special.INSERT, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actNewFolder),
-				     action("new-contact", "Новый контакт", new InputEvent(InputEvent.Special.INSERT), this::actNewContact)
-				     );
-	}
+	this.foldersArea = new ListArea(listParams((params)->{
+		    params.model = new ListUtils.ListModel(items);
+		    params.appearance = new FoldersAppearance(app);
+		    params.name = app.getStrings().foldersAreaName();
+		    params.clickHandler = this;
+		}));
+	final Actions foldersActions = actions(
+					       action("new-folder", "Новая группа", new InputEvent(InputEvent.Special.INSERT, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actNewFolder),
+					       action("new-contact", "Новый контакт", new InputEvent(InputEvent.Special.INSERT), this::actNewContact)
+					       );
 
-	final Actions valuesActions;
-	{
-	    this.valuesArea = new FormArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().valuesAreaName());
-	    valuesActions = actions(
-				    action("new-value", "Добавить новое значение", new InputEvent(InputEvent.Special.INSERT), this::actNewValue)
-				    );
-	}
+	this.valuesArea = new FormArea(getControlContext(), app.getStrings().valuesAreaName());
+	final Actions valuesActions = actions(
+					      action("new-value", "Добавить новое значение", new InputEvent(InputEvent.Special.INSERT), this::actNewValue)
+					      );
 
-	final Actions notesActions;
-	{
-	    final EditArea.Params params = new EditArea.Params();
-	    params.context = getControlContext();
-	    params.name = app.getStrings().notesAreaName();
-	    params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext());
-	    this.notesArea = new EditArea(params);
-	    notesActions = actions();
-	}
+	this.notesArea = new EditArea(editParams((params)->{
+		    params.name = app.getStrings().notesAreaName();
+		    params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext());
+		}));
+	final Actions notesActions = actions();
 
 	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, foldersActions, valuesArea, valuesActions, notesArea, notesActions);
     }
