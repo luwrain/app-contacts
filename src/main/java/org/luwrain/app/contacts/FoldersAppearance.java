@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.pim.contacts.*;
 
-final class FoldersAppearance implements ListArea.Appearance
+final class FoldersAppearance implements ListArea.Appearance<Object>
 {
     private final App app;
 
